@@ -2,8 +2,6 @@
    GUTIÉRREZ INNOVACIONES CL — EDITORIAL DESIGN SYSTEM
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
-
 :root {
     --bg-page: #0B0C10;
     --bg-elevated: #16181F;
@@ -1130,6 +1128,7 @@ section {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: 50% 12%;
     display: block;
 }
 
