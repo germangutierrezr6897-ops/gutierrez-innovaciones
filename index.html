@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Gutiérrez Innovaciones CL - Soluciones digitales integrales en Chile. Desarrollamos sitios web, e-commerce, apps, sistemas de gestión, dashboards, software médico e inventarios con tecnología de vanguardia.">
+    <meta name="keywords" content="desarrollo web chile, software a la medida, e-commerce, apps, sistemas de gestion, bi, dashboards, apis, control inventario, software clinicas, gutierrez innovaciones">
+    <meta name="author" content="Gutiérrez Innovaciones CL">
+    <link rel="canonical" href="https://gutierrezinnovaciones.cl/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://gutierrezinnovaciones.cl/">
+    <meta property="og:title" content="Gutiérrez Innovaciones CL | Soluciones Digitales Integrales">
+    <meta property="og:description" content="Desarrollo premium de software, sitios web, e-commerce, bases de datos y dashboards inteligentes para impulsar tu negocio.">
+    <meta property="og:image" content="assets/og-image.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="Gutiérrez Innovaciones CL | Soluciones Digitales Integrales">
+    <meta property="twitter:description" content="Desarrollo premium de software, sitios web, e-commerce, bases de datos y dashboards inteligentes para impulsar tu negocio.">
+    <meta property="twitter:image" content="assets/og-image.png">
+
+    <title>Gutiérrez Innovaciones CL | Soluciones Digitales Integrales</title>
+
+    <!-- CSS Stylesheet -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/favicon.png" onerror="this.onerror=null; this.href='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>';">
+</head>
+<body>
+
+    <!-- ========== INTRO SCREEN ========== -->
+    <div id="intro-screen">
+        <div class="intro-content">
+            <div class="intro-logo-mark">
+                <img src="assets/logo-mark.png" alt="Gutiérrez Innovaciones CL">
+            </div>
+            <p class="intro-label">GUTIÉRREZ INNOVACIONES CL</p>
+            <h1 class="intro-title">El Futuro<br><span>se Construye</span><br>Hoy.</h1>
+            <p class="intro-sub">Soluciones digitales que transforman negocios.</p>
+            <button id="intro-enter-btn" class="intro-btn">
+                <span>Ingresar</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </button>
+        </div>
+    </div>
+    <!-- ========== END INTRO SCREEN ========== -->
+
+    <!-- Header / Navigation -->
+    <header id="site-header">
+        <div class="container nav-container">
+            <a href="#" class="logo">
+                <span class="logo-icon-wrap"><img class="logo-icon" src="assets/logo-mark.png" alt="Gutiérrez Innovaciones CL"></span>
+                <span>Gutiérrez Innovaciones <span style="color: var(--accent);">CL</span></span>
+            </a>
+
+            <nav>
+                <ul class="nav-links" id="nav-menu">
+                    <li><a href="#hero">Inicio</a></li>
+                    <li><a href="#services">Servicios</a></li>
+                    <li><a href="#portfolio">Proyectos</a></li>
+                    <li><a href="#about">Nosotros</a></li>
+                    <li><a href="#contact">Contacto</a></li>
+                    <li><a href="#contact" class="btn btn-primary" style="padding: 0.5rem 1.2rem; font-size: 0.8rem;">Cotizar</a></li>
+                </ul>
+            </nav>
+
+            <button class="burger" id="menu-toggle" aria-label="Abrir menú">
+                <div class="line1"></div>
+                <div class="line2"></div>
+                <div class="line3"></div>
+            </button>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero">
+        <div class="hero-bg-image" style="background-image: url('assets/photos/desk-accent.jpg');"></div>
+        <div class="hero-bg-overlay"></div>
+        <div class="container hero-grid">
+            <div class="hero-content reveal active">
+                <div class="hero-tagline">Soluciones Digitales Premium</div>
+                <h1 class="hero-title">Ingeniería digital <span class="highlight-text">que impulsa</span> el futuro</h1>
+                <p class="hero-description">
+                    En <strong>Gutiérrez Innovaciones CL</strong> transformamos ideas complejas en software robusto, escalable y con una experiencia de usuario fascinante. Desarrollamos desde portales corporativos de alta velocidad hasta complejos sistemas de inventario y analítica de datos.
+                </p>
+                <div class="hero-buttons">
+                    <a href="#contact" class="btn btn-primary">Solicitar Cotización</a>
+                    <a href="#services" class="btn btn-secondary">Explorar Soluciones</a>
+                </div>
+            </div>
+
+            <div class="hero-visual reveal active">
+                <div class="hero-visual-card">
+                    <span class="hero-visual-kicker">Tu app, en tiempo real</span>
+                    <div class="hero-visual-image-wrap">
+                        <img class="hero-visual-image" src="assets/photos/app-preview.jpg" alt="+Combustible funcionando en el celular">
+                    </div>
+                    <div class="hero-visual-tag">
+                        <div class="hero-visual-tag-stat" id="hero-stat" data-target="99.9">0%</div>
+                        <div>
+                            <h4>Uptime garantizado</h4>
+                            <p>Monitoreo continuo y soporte técnico permanente.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tech Stack Marquee -->
+    <div class="tech-marquee">
+        <div class="tech-marquee-track">
+            <span>React</span><span>Next.js</span><span>FastAPI</span><span>PostgreSQL</span><span>TypeScript</span><span>Tailwind CSS</span><span>Docker</span><span>Prisma</span><span>Node.js</span><span>Python</span>
+            <span aria-hidden="true">React</span><span aria-hidden="true">Next.js</span><span aria-hidden="true">FastAPI</span><span aria-hidden="true">PostgreSQL</span><span aria-hidden="true">TypeScript</span><span aria-hidden="true">Tailwind CSS</span><span aria-hidden="true">Docker</span><span aria-hidden="true">Prisma</span><span aria-hidden="true">Node.js</span><span aria-hidden="true">Python</span>
+        </div>
+    </div>
+
+    <!-- Services Section -->
+    <section id="services" class="services">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-subtitle">Nuestras Capacidades</span>
+                <h2 class="section-title">Soluciones Tecnológicas Integrales</h2>
+                <p>Ofrecemos un espectro completo de servicios para digitalizar y automatizar cada proceso de tu negocio o institución.</p>
+            </div>
+
+            <!-- Tab System Navigation -->
+            <ul class="services-tabs reveal">
+                <li><button class="tab-btn active" data-tab="all">Todos los Servicios</button></li>
+                <li><button class="tab-btn" data-tab="web">Web & Portales</button></li>
+                <li><button class="tab-btn" data-tab="software">Software & Gestión</button></li>
+                <li><button class="tab-btn" data-tab="data">Datos & Integración</button></li>
+            </ul>
+
+            <!-- Services Cards Grid -->
+            <div class="services-grid" id="services-grid">
+
+                <!-- WEB TAB SERVICES -->
+                <div class="service-card service-card--feature reveal" data-category="web">
+                    <div class="service-icon-wrapper">
+                        <svg class="service-icon" viewBox="0 0 24 24">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                            <line x1="8" y1="21" x2="16" y2="21"></line>
+                            <line x1="12" y1="17" x2="12" y2="21"></line>
+                        </svg>
+                    </div>
+                    <h3>Sitios Web & Landing Pages</h3>
+                    <p>Diseño web corporativo de alto impacto, ultra rápido y adaptado a móviles. Creado con las mejores prácticas de SEO para posicionarte en Google.</p>
+                    <ul class="service-features">
+                        <li>Optimización de velocidad WPO</li>
+                        <li>SEO semántico estructurado</li>
+                        <li>Diseño exclusivo responsivo</li>
+                    </ul>
+                </div>
+
+                <div class="service-card reveal" data-category="web">
+                    <div class="service-icon-wrapper">
+                        <svg class="service-icon" viewBox="0 0 24 24">
+                            <circle cx="9" cy="21" r="1"></circle>
+                            <circle cx="20" cy="21" r="1"></circle>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                        </svg>
+                    </div>
+                    <h3>E-commerce & Tiendas Virtuales</h3>
+                    <p>Plataformas de venta online robustas con pasarelas de pago integradas (Webpay, Stripe, Mercado Pago) y sistemas automatizados de despacho.</p>
+                    <ul class="service-features">
+                        <li>Carritos de compra rápidos</li>
+                        <li>Panel autoadministrable de stock</li>
+                        <li>Cupones y descuentos dinámicos</li>
+                    </ul>
+                </div>
+
+                <div class="service-card reveal" data-category="web">
+                    <div class="service-icon-wrapper">
+                        <svg class="service-icon" viewBox="0 0 24 24">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                        </svg>
+                    </div>
+                    <h3>E-learning & Aulas Virtuales</h3>
+                    <p>Sistemas de capacitación online y portales educativos para colegios, universidades o capacitaciones internas corporativas.</p>
+                    <ul class="service-features">
+                        <li>Progreso de alumnos y quizzes</li>
+                        <li>Videotutoriales integrados</li>
+                        <li>Certificaciones automatizadas</li>
+                    </ul>
+                </div>
+
+                <div class="service-card reveal" data-category="web">
+                    <div class="service-icon-wrapper">
+                        <svg class="service-icon" viewBox="0 0 24 24">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                    </div>
+                    <h3>Portales Corporativos</h3>
+                    <p>Intranets, extranets y portales de comunicación interna para grandes organizaciones que requieren flujos de información estructurados.</p>
+                    <ul class="service-features">
+                        <li>Control de acceso jerárquico</li>
+                        <li>Gestor documental en la nube</li>
+                        <li>Comunicación interna segura</li>
+                    </ul>
+                </div>
+
+                <!-- SOFTWARE TAB SERVICES -->
+                <div class="service-card service-card--feature reveal" data-category="software">
+                    <div class="service-icon-wrapper">
+                        <svg class="service-icon" viewBox="0 0 24 24">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="9" y1="3" x2="9" y2="21"></line>
+                            <line x1="9" y1="9" x2="21" y2="9"></line>
+                            <line x1="9" y1="15" x2="21" y2="15"></line>
+                        </svg>
+                    </div>
+                    <h3>Sistemas de Gestión & ERP</h3>
+                    <p>Software a medida para organizar los recursos de tu empresa, planificar tareas, gestionar clientes (CRM) y centralizar la operación.</p>
+                    <ul class="service-features">
+                        <li>Facturación y control financiero</li>
+                        <li>Gestión de clientes y leads</li>
+                        <li>Módulos adaptados a tu industria</li>
+                    </ul>
+                </div>
+
+                <div class="service-card reveal" data-category="software">
+                    <div class="service-icon-wrapper">
+                        <svg class="service-icon" viewBox="0 0 24 24">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                            <line x1="2" y1="10" x2="22" y2="10"></line>
+                            <path d="M6 21h12"></path>
+                            <path d="M12 17v4"></path>
+                        </svg>
+                    </div>
+                    <h3>Puntos de Venta (POS) & Inventario</h3>
+                    <p>Sistemas ágiles para tiendas físicas con boletas electrónicas automáticas, alertas de stock mínimo y control de cajeros en tiempo real.</p>
+                    <ul class="service-features">
+                        <li>Integración con lectores de barras</li>
+                        <li>Reportes diarios de ventas</li>
+                        <li>Alertas automáticas de inventario</li>
+                    </ul>
+                </div>
+
+                <div class="service-card reveal" data-category="software">
+                    <div class="service-icon-wrapper">
+                        <svg class="service-icon" viewBox="0 0 24 24">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                        </svg>
+                    </div>
+                    <h3>Software para Clínicas y Consultorios</h3>
+                    <p>Fichas médicas digitales, agendas de horas interactivas para doctores y recordatorios de citas vía correo y WhatsApp.</p>
+                    <ul class="service-features">
+                        <li>Historial clínico confidencial</li>
+                        <li>Reserva de citas en línea</li>
+                        <li>Recetario y órdenes digitales</li>
+                    </ul>
+                </div>
+
+                <div class="service-card reveal" data-category="software">
+                    <div class="service-icon-wrapper">
+                        <svg class="service-icon" viewBox="0 0 24 24">
+                            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                            <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                        </svg>
+                    </div>
+                    <h3>Aplicaciones Móviles (iOS & Android)</h3>
+                    <p>Desarrollo de apps nativas e híbridas de alto rendimiento listas para ser publicadas en App Store y Google Play.</p>
+                    <ul class="service-features">
+                        <li>Notificaciones Push integradas</li>
+                        <li>Modo Offline con base de datos local</li>
+                        <li>Uso de GPS, cámara y sensores</li>
+                    </ul>
+                </div>
+
+                <!-- DATA TAB SERVICES -->
+                <div class="service-card service-card--feature reveal" data-category="data">
+                    <div class="service-icon-wrapper">
+                        <svg class="service-icon" viewBox="0 0 24 24">
+                            <line x1="18" y1="20" x2="18" y2="10"></line>
+                            <line x1="12" y1="20" x2="12" y2="4"></line>
+                            <line x1="6" y1="20" x2="6" y2="14"></line>
+                        </svg>
+                    </div>
+                    <h3>Dashboards & Business Intelligence</h3>
+                    <p>Visualización interactiva de tus métricas clave. Conectamos múltiples fuentes de datos para que tomes decisiones informadas y rápidas.</p>
+                    <ul class="service-features">
+                        <li>Integración con PowerBI / Metabase</li>
+                        <li>Actualizaciones de datos automatizadas</li>
+                        <li>Gráficos dinámicos interactivos</li>
+                    </ul>
+                </div>
+
+                <div class="service-card reveal" data-category="data">
+                    <div class="service-icon-wrapper">
+                        <svg class="service-icon" viewBox="0 0 24 24">
+                            <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+                            <path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"></path>
+                        </svg>
+                    </div>
+                    <h3>Diseño de Bases de Datos</h3>
+                    <p>Diseño físico y lógico de bases de datos de alto volumen, optimización de consultas SQL/NoSQL y migraciones de datos complejas.</p>
+                    <ul class="service-features">
+                        <li>PostgreSQL, MongoDB, SQL Server</li>
+                        <li>Seguridad y encriptado de datos</li>
+                        <li>Copias de seguridad programadas</li>
+                    </ul>
+                </div>
+
+                <div class="service-card reveal" data-category="data">
+                    <div class="service-icon-wrapper">
+                        <svg class="service-icon" viewBox="0 0 24 24">
+                            <polyline points="16 16 12 12 8 16"></polyline>
+                            <line x1="12" y1="12" x2="12" y2="21"></line>
+                            <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
+                            <polyline points="16 16 12 12 8 16"></polyline>
+                        </svg>
+                    </div>
+                    <h3>Creación & Integración de APIs</h3>
+                    <p>Desarrollo de endpoints rápidos y seguros para conectar tus sistemas internos con plataformas externas de terceros, pasarelas y ERPs.</p>
+                    <ul class="service-features">
+                        <li>Documentación Swagger/OpenAPI</li>
+                        <li>Cifrado JWT y autenticación OAuth</li>
+                        <li>Estructura REST y GraphQL</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Cinematic Capability Band -->
+    <section class="capability-band">
+        <div class="capability-bg" style="background-image: url('assets/photos/code-band.jpg');"></div>
+        <div class="capability-overlay"></div>
+        <div class="container capability-content reveal">
+            <span class="section-subtitle capability-subtitle">Ingeniería de Software</span>
+            <h2 class="capability-title">Código de producción, no prototipos de fin de semana</h2>
+            <p class="capability-text">Arquitecturas pensadas para crecer: APIs documentadas, bases de datos optimizadas, autenticación segura y despliegues automatizados. Lo mismo que exigiríamos si el negocio fuera nuestro.</p>
+            <div class="capability-stats">
+                <div class="capability-stat">
+                    <span class="capability-stat-number">100%</span>
+                    <span class="capability-stat-label">Código propio, sin plantillas</span>
+                </div>
+                <div class="capability-stat">
+                    <span class="capability-stat-number">24/7</span>
+                    <span class="capability-stat-label">Monitoreo de producción</span>
+                </div>
+                <div class="capability-stat">
+                    <span class="capability-stat-number">A-Z</span>
+                    <span class="capability-stat-label">Frontend, backend y datos</span>
+                </div>
+            </div>
+        </div>
+        <div class="section-divider"></div>
+    </section>
+
+    <!-- Portfolio Section -->
+    <section id="portfolio" class="portfolio">
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-subtitle">Nuestro Trabajo</span>
+                <h2 class="section-title">Proyectos que Hemos Construido</h2>
+                <p>Una muestra de sitios y sistemas reales que desarrollamos para negocios en Chile.</p>
+            </div>
+
+            <div class="portfolio-grid">
+
+                <a class="portfolio-card reveal" href="https://mascombustible.cl" target="_blank" rel="noopener">
+                    <div class="portfolio-card-image">
+                        <img src="assets/portfolio/combustible.jpg" alt="+Combustible — plataforma de precios de bencina" loading="lazy">
+                    </div>
+                    <div class="portfolio-card-body">
+                        <span class="portfolio-card-tag">Web App & Sistema de Descuentos</span>
+                        <h3>+Combustible</h3>
+                        <p>Plataforma que encuentra el mejor precio de bencina y diésel en Chile: mapa de estaciones en tiempo real, comparador de precios y sistema de membresías con descuentos.</p>
+                        <span class="portfolio-card-link">Ver sitio ↗</span>
+                    </div>
+                </a>
+
+                <a class="portfolio-card reveal" href="https://dtconstrucciones.cl" target="_blank" rel="noopener">
+                    <div class="portfolio-card-image">
+                        <img src="assets/portfolio/dt-construcciones.jpg" alt="DT Construcciones y Aseo" loading="lazy">
+                    </div>
+                    <div class="portfolio-card-body">
+                        <span class="portfolio-card-tag">Sitio Corporativo</span>
+                        <h3>DT Construcciones y Aseo</h3>
+                        <p>Sitio web para empresa de construcción y servicios generales en Hualaihué y Provincia de Palena, con cotizador de proyectos y galería de obras.</p>
+                        <span class="portfolio-card-link">Ver sitio ↗</span>
+                    </div>
+                </a>
+
+                <a class="portfolio-card reveal" href="https://www.perfumeriaeldolar.cl" target="_blank" rel="noopener">
+                    <div class="portfolio-card-image">
+                        <img src="assets/portfolio/eldolar.jpg" alt="El Dólar Perfumería" loading="lazy">
+                    </div>
+                    <div class="portfolio-card-body">
+                        <span class="portfolio-card-tag">E-commerce</span>
+                        <h3>El Dólar Perfumería</h3>
+                        <p>Tienda online de perfumes, maquillaje y cuidado personal con catálogo, carrito de compras y despacho a todo Chile.</p>
+                        <span class="portfolio-card-link">Ver sitio ↗</span>
+                    </div>
+                </a>
+
+                <a class="portfolio-card reveal" href="https://dronesagricolasgmd.cl" target="_blank" rel="noopener">
+                    <div class="portfolio-card-image">
+                        <img src="assets/portfolio/agrodron.jpg" alt="Drones Agrícolas GMD" loading="lazy">
+                    </div>
+                    <div class="portfolio-card-body">
+                        <span class="portfolio-card-tag">Sitio Corporativo</span>
+                        <h3>Drones Agrícolas GMD</h3>
+                        <p>Sitio para empresa de fumigación y aplicaciones agrícolas con drones en el centro-sur de Chile, con cobertura por localidad y solicitud de cotización.</p>
+                        <span class="portfolio-card-link">Ver sitio ↗</span>
+                    </div>
+                </a>
+
+                <div class="portfolio-card portfolio-card--dev reveal">
+                    <div class="portfolio-card-image portfolio-card-image--icon">
+                        <div class="portfolio-card-image-grid"></div>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M3 9h18"></path><path d="M9 21V9"></path></svg>
+                    </div>
+                    <div class="portfolio-card-body">
+                        <span class="portfolio-card-tag">SaaS de Gestión</span>
+                        <h3>PetControl</h3>
+                        <p>Sistema de gestión operacional para tiendas de alimentos para mascotas: punto de venta, despachos, reposición de stock, recepción de proveedores y reportes.</p>
+                        <span class="portfolio-card-link portfolio-card-link--muted">En desarrollo</span>
+                    </div>
+                </div>
+
+                <div class="portfolio-card portfolio-card--dev reveal">
+                    <div class="portfolio-card-image">
+                        <img src="assets/portfolio/verticalrun.jpg" alt="Vertical Run Media" loading="lazy">
+                    </div>
+                    <div class="portfolio-card-body">
+                        <span class="portfolio-card-tag">Web App & Panel Admin</span>
+                        <h3>Vertical Run Media</h3>
+                        <p>Sitio para un negocio de fotografía deportiva: los corredores buscan y compran su clip de carreras de calle y trail por número de dorsal.</p>
+                        <span class="portfolio-card-link portfolio-card-link--muted">En desarrollo</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container about-grid">
+            <div class="about-text reveal">
+                <span class="section-subtitle">¿Quiénes Somos?</span>
+                <h2 class="section-title">Impulsamos la Transformación Digital en Chile</h2>
+                <p>
+                    En <strong>Gutiérrez Innovaciones CL</strong>, entendemos que la tecnología debe adaptarse a tu negocio, y no al revés. Contamos con un equipo especializado en el diseño de arquitecturas estables, interfaces fluidas e integraciones inteligentes.
+                </p>
+                <p>
+                    Nuestros desarrollos no solo lucen impecables y modernos, sino que están construidos para soportar cargas pesadas de tráfico, proteger datos confidenciales y garantizar la continuidad operacional de tu negocio.
+                </p>
+            </div>
+
+            <!-- Photo + floating stats -->
+            <div class="about-visual reveal">
+                <img class="about-photo" src="assets/photos/server-accent.jpg" alt="Infraestructura y servidores">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" data-target="99">0%</div>
+                        <div class="stat-label">Uptime Servidores</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" data-target="50">0+</div>
+                        <div class="stat-label">Proyectos Entregados</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" data-target="4">0 sem</div>
+                        <div class="stat-label">Entrega Promedio</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" data-target="100">0%</div>
+                        <div class="stat-label">Clientes Satisfechos</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Founder -->
+        <div class="container">
+            <div class="founder-card reveal">
+                <div class="founder-photo-wrap">
+                    <img class="founder-photo" src="assets/photos/founder.jpg" alt="Germán Gutiérrez, Fundador y CEO de Gutiérrez Innovaciones CL">
+                </div>
+                <div class="founder-content">
+                    <span class="founder-quote-mark">&ldquo;</span>
+                    <div class="founder-bio">
+                        <p>He pasado por distintos emprendimientos y negocios, y esa experiencia me convenció de algo: hoy no se puede competir sin acoger la tecnología y estar a la vanguardia. Eso es lo que nos mueve — que las pymes crezcan y que cada empresa con la que trabajamos entre en una lógica de mejora continua.</p>
+                        <p>Soy especialista en IA avanzada, con foco en análisis de datos y análisis de negocio, y mi formación en Ingeniería Industrial me da una mirada crítica y estructurada para ser un aporte sustantivo a tu organización, no solo entregar código.</p>
+                        <p>Ya llevamos más de 100 servicios entregados, y seguimos preparándonos día a día para los nuevos desafíos de nuestros clientes.</p>
+                    </div>
+                    <div class="founder-meta">
+                        <span class="founder-name">Germán Gutiérrez</span>
+                        <span class="founder-role">Fundador &amp; CEO, Gutiérrez Innovaciones CL</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- "Cómo trabajamos" process -->
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-subtitle">Metodología</span>
+                <h2 class="section-title">Cómo Trabajamos</h2>
+                <p>Un proceso claro de principio a fin, para que siempre sepas en qué etapa está tu proyecto.</p>
+            </div>
+            <div class="process-grid">
+                <div class="process-step reveal">
+                    <span class="process-step-number">01</span>
+                    <h4>Descubrimiento</h4>
+                    <p>Levantamos tus requerimientos reales: procesos, usuarios y objetivos de negocio.</p>
+                </div>
+                <div class="process-step reveal">
+                    <span class="process-step-number">02</span>
+                    <h4>Propuesta técnica</h4>
+                    <p>Definimos alcance, arquitectura, plazos y presupuesto cerrado antes de empezar a construir.</p>
+                </div>
+                <div class="process-step reveal">
+                    <span class="process-step-number">03</span>
+                    <h4>Desarrollo iterativo</h4>
+                    <p>Entregas parciales y revisables, para validar avances antes de seguir a la siguiente etapa.</p>
+                </div>
+                <div class="process-step reveal">
+                    <span class="process-step-number">04</span>
+                    <h4>Lanzamiento & soporte</h4>
+                    <p>Puesta en producción acompañada y soporte técnico posterior al lanzamiento.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact">
+        <div class="container contact-grid">
+            <div class="contact-info reveal">
+                <span class="section-subtitle">Hablemos de tu Proyecto</span>
+                <h2 class="section-title">¿Listo para innovar?</h2>
+                <p>Rellena el formulario de la derecha o contáctanos por nuestros canales oficiales. Te responderemos en menos de 24 horas hábiles.</p>
+
+                <div class="contact-details">
+                    <div class="contact-method">
+                        <div class="contact-method-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
+                        </div>
+                        <div class="contact-method-text">
+                            <h4>Correo de Contacto</h4>
+                            <p>contacto@gutierrezinnovaciones.cl</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-method">
+                        <div class="contact-method-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                            </svg>
+                        </div>
+                        <div class="contact-method-text">
+                            <h4>Teléfono / WhatsApp</h4>
+                            <p>+56 9 3133 5507</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-method">
+                        <div class="contact-method-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                        </div>
+                        <div class="contact-method-text">
+                            <h4>Ubicación</h4>
+                            <p>Santiago, Chile (Servicios para todo el país)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form -->
+            <div class="contact-form-container reveal">
+                <form class="contact-form" id="main-contact-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="form-name">Nombre Completo</label>
+                            <input type="text" id="form-name" placeholder="Ej. Juan Pérez" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="form-email">Correo Electrónico</label>
+                            <input type="email" id="form-email" placeholder="Ej. juan@empresa.cl" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="form-phone">Teléfono de Contacto</label>
+                            <input type="tel" id="form-phone" placeholder="Ej. +56 9 8765 4321">
+                        </div>
+                        <div class="form-group">
+                            <label for="form-service">Servicio de Interés</label>
+                            <select id="form-service">
+                                <option value="Web/Landing">Sitio Web / Landing Page</option>
+                                <option value="E-commerce">E-commerce / Tienda Virtual</option>
+                                <option value="Software/ERP">Sistemas de Gestión / ERP</option>
+                                <option value="AppMovil">Aplicación Móvil</option>
+                                <option value="Data/BI">BI & Dashboards de Datos</option>
+                                <option value="Clinica/Medicina">Software para Clínicas</option>
+                                <option value="POS/Inventario">Inventario & POS</option>
+                                <option value="Otro">Otro requerimiento</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="form-message">Mensaje / Detalles de tu proyecto</label>
+                        <textarea id="form-message" placeholder="Cuéntanos un poco sobre tu negocio, qué necesitas construir y los plazos aproximados..." required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Enviar Mensaje</button>
+
+                    <div class="form-status" id="form-status-msg">
+                        ¡Mensaje enviado con éxito! Un ejecutivo se pondrá en contacto contigo pronto.
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <a href="#" class="logo">
+                    <span class="logo-icon-wrap"><img class="logo-icon" src="assets/logo-mark.png" alt="Gutiérrez Innovaciones CL"></span>
+                    <span>Gutiérrez Innovaciones <span style="color: var(--accent-strong);">CL</span></span>
+                </a>
+                <p>Proveemos soluciones digitales integrales y desarrollo de software premium a la medida para empresas de todo Chile.</p>
+            </div>
+
+            <div class="footer-links">
+                <h3>Enlaces Rápidos</h3>
+                <ul>
+                    <li><a href="#hero">Inicio</a></li>
+                    <li><a href="#services">Servicios</a></li>
+                    <li><a href="#portfolio">Proyectos</a></li>
+                    <li><a href="#about">Nosotros</a></li>
+                    <li><a href="#contact">Contacto</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-links">
+                <h3>Servicios Principales</h3>
+                <ul>
+                    <li><a href="#services">Sistemas de Gestión ERP</a></li>
+                    <li><a href="#services">Puntos de Venta (POS)</a></li>
+                    <li><a href="#services">Desarrollo E-commerce</a></li>
+                    <li><a href="#services">Software Clínico</a></li>
+                    <li><a href="#services">Dashboards & PowerBI</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="container footer-bottom">
+            <p>&copy; 2026 Gutiérrez Innovaciones CL. Todos los derechos reservados. Diseñado con tecnología de alta gama.</p>
+            <p>Santiago, Chile</p>
+        </div>
+    </footer>
+
+    <!-- WhatsApp floating CTA -->
+    <a class="whatsapp-float" href="https://wa.me/56931335507" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21h.01c5.46 0 9.9-4.45 9.9-9.91 0-2.65-1.03-5.13-2.9-7C17.19 3.03 14.7 2 12.04 2zm5.8 14.17c-.24.68-1.4 1.3-1.94 1.38-.5.08-1.12.11-1.81-.11-.42-.13-.95-.31-1.64-.6-2.88-1.24-4.76-4.14-4.9-4.33-.14-.19-1.18-1.57-1.18-3 0-1.42.75-2.12 1.01-2.41.27-.29.58-.36.78-.36.19 0 .39 0 .55.01.18.01.42-.07.65.5.24.58.81 2 .88 2.14.07.15.12.32.02.51-.09.19-.14.31-.28.48-.14.16-.29.36-.42.49-.14.14-.28.28-.12.56.16.28.71 1.17 1.53 1.9 1.05.94 1.94 1.23 2.22 1.37.28.14.44.12.6-.07.16-.19.68-.79.87-1.06.18-.28.37-.23.61-.14.25.09 1.58.75 1.85.88.27.14.45.2.51.32.07.12.07.68-.17 1.35z"></path></svg>
+    </a>
+
+    <!-- App Logic Script -->
+    <script src="app.js"></script>
+</body>
+</html>
