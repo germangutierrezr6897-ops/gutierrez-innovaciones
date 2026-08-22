@@ -3,6 +3,9 @@
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Computed once and reused by every motion-gated effect below (hero tilt, portfolio tilt/parallax, cursor spotlight)
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     // 1. INTRO SCREEN
     const introScreen = document.getElementById('intro-screen');
     const introBtn    = document.getElementById('intro-enter-btn');
@@ -39,6 +42,60 @@ document.addEventListener('DOMContentLoaded', () => {
             if (progress < 1) requestAnimationFrame(tickHeroStat);
         }
         requestAnimationFrame(tickHeroStat);
+    }
+
+    // 1.2 HERO SCROLL DEPTH + TILT: subtle 3D on the phone-mockup card as you
+    // scroll past the hero, plus mouse tilt on desktop. Desktop pointer only —
+    // mobile keeps just the existing CSS float/Ken Burns idle animations.
+    // Perspective lives in the transform itself (perspective(...)), same
+    // pattern as the portfolio card tilt below, so it composes into one write.
+    const heroSection = document.getElementById('hero');
+    const heroBgImage = document.querySelector('.hero-bg-image');
+    const heroVisualCard = document.querySelector('.hero-visual-card');
+    const supportsHeroTilt = window.matchMedia('(pointer: fine)').matches && window.innerWidth > 900;
+
+    if (heroSection && heroBgImage && heroVisualCard && !prefersReducedMotion && supportsHeroTilt) {
+        heroVisualCard.classList.add('hero-tilt-active'); // turns off the cardFloat keyframe so it stops fighting the JS transform
+
+        let heroInView = true;
+        const heroObserver = new IntersectionObserver((entries) => {
+            heroInView = entries[0].isIntersecting;
+        }, { threshold: 0 });
+        heroObserver.observe(heroSection);
+
+        let mouseRotateX = 0;
+        let mouseRotateY = 0;
+        let heroTicking = false;
+
+        function updateHeroDepth() {
+            const rect = heroSection.getBoundingClientRect();
+            const progress = Math.min(1, Math.max(0, -rect.top / rect.height));
+            heroBgImage.style.transform = `translateY(${(progress * 25).toFixed(1)}px)`;
+            heroVisualCard.style.transform = `perspective(1200px) rotateX(${(progress * -6 + mouseRotateX).toFixed(2)}deg) rotateY(${mouseRotateY.toFixed(2)}deg) translateY(${(progress * -20).toFixed(1)}px)`;
+            heroTicking = false;
+        }
+
+        function requestHeroUpdate() {
+            if (!heroInView || heroTicking) return;
+            heroTicking = true;
+            requestAnimationFrame(updateHeroDepth);
+        }
+
+        heroVisualCard.addEventListener('mousemove', (e) => {
+            const rect = heroVisualCard.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            mouseRotateX = ((y - rect.height / 2) / (rect.height / 2)) * -4;
+            mouseRotateY = ((x - rect.width / 2) / (rect.width / 2)) * 4;
+            requestHeroUpdate();
+        });
+        heroVisualCard.addEventListener('mouseleave', () => {
+            mouseRotateX = 0;
+            mouseRotateY = 0;
+            requestHeroUpdate();
+        });
+        window.addEventListener('scroll', requestHeroUpdate, { passive: true });
+        requestHeroUpdate();
     }
 
     // 2. HEADER SCROLL & MOBILE NAVIGATION MENU
@@ -80,7 +137,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // 2.1 PORTFOLIO CARDS: 3D tilt on hover + scroll-linked parallax drift,
     // unified into one transform per card so they don't fight each other
     // (both would otherwise write to the same `transform` property).
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const portfolioCardStates = Array.from(document.querySelectorAll('.portfolio-grid .portfolio-card')).map((el, i) => ({
         el,
         factor: (i % 2 === 0) ? -0.04 : 0.06,

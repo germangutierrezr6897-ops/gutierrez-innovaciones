@@ -482,6 +482,19 @@ nav {
     .hero-visual-card { animation: none; }
 }
 
+/* JS takes over the transform for scroll depth + mouse tilt on desktop pointers,
+   so the CSS float keyframe (which also animates transform) has to step aside. */
+.hero-visual-card.hero-tilt-active {
+    animation: none;
+}
+
+@media (pointer: fine) and (min-width: 900px) {
+    .hero-bg-image,
+    .hero-visual-card {
+        will-change: transform;
+    }
+}
+
 .hero-visual-kicker {
     font-size: 0.78rem;
     font-weight: 600;
