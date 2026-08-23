@@ -818,12 +818,12 @@ section {
 .services-grid:not(.stack-active) .service-card:not(:first-child) { margin-top: -340px; }
 
 /* Vivid color rotation — cycles through 6 saturated gradients */
-.services-grid .service-card:nth-child(6n+1) { --card-grad: linear-gradient(135deg, #3A5CFF 0%, #7B2FF7 100%); --card-accent: rgba(89, 68, 246, 0.45); }
-.services-grid .service-card:nth-child(6n+2) { --card-grad: linear-gradient(135deg, #FF3D68 0%, #FF8A3D 100%); --card-accent: rgba(255, 91, 82, 0.45); }
-.services-grid .service-card:nth-child(6n+3) { --card-grad: linear-gradient(135deg, #06B26B 0%, #05C7C0 100%); --card-accent: rgba(6, 178, 145, 0.45); }
-.services-grid .service-card:nth-child(6n+4) { --card-grad: linear-gradient(135deg, #F59E0B 0%, #EA580C 100%); --card-accent: rgba(240, 130, 20, 0.45); }
-.services-grid .service-card:nth-child(6n+5) { --card-grad: linear-gradient(135deg, #8B2FD1 0%, #D6249F 100%); --card-accent: rgba(178, 47, 178, 0.45); }
-.services-grid .service-card:nth-child(6n+6) { --card-grad: linear-gradient(135deg, #0EA5E9 0%, #2563EB 100%); --card-accent: rgba(20, 130, 230, 0.45); }
+.services-grid .service-card:nth-child(6n+1) { --card-grad: linear-gradient(135deg, #3A5CFF 0%, #7B2FF7 100%); --card-accent: rgba(89, 68, 246, 0.45); --card-accent-solid: #4A3CE0; }
+.services-grid .service-card:nth-child(6n+2) { --card-grad: linear-gradient(135deg, #FF3D68 0%, #FF8A3D 100%); --card-accent: rgba(255, 91, 82, 0.45); --card-accent-solid: #E0442F; }
+.services-grid .service-card:nth-child(6n+3) { --card-grad: linear-gradient(135deg, #06B26B 0%, #05C7C0 100%); --card-accent: rgba(6, 178, 145, 0.45); --card-accent-solid: #068F63; }
+.services-grid .service-card:nth-child(6n+4) { --card-grad: linear-gradient(135deg, #F59E0B 0%, #EA580C 100%); --card-accent: rgba(240, 130, 20, 0.45); --card-accent-solid: #C2570A; }
+.services-grid .service-card:nth-child(6n+5) { --card-grad: linear-gradient(135deg, #8B2FD1 0%, #D6249F 100%); --card-accent: rgba(178, 47, 178, 0.45); --card-accent-solid: #A0299B; }
+.services-grid .service-card:nth-child(6n+6) { --card-grad: linear-gradient(135deg, #0EA5E9 0%, #2563EB 100%); --card-accent: rgba(20, 130, 230, 0.45); --card-accent-solid: #1568C4; }
 
 /* z-index order for the deck — later cards render on top of earlier ones
    wherever the negative-margin overlap above makes them intersect. */
@@ -840,11 +840,12 @@ section {
 .services-grid .service-card:nth-child(11) { z-index: 11; }
 
 .service-icon-wrapper {
-    width: 48px;
-    height: 48px;
+    width: 64px;
+    height: 64px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.18);
-    border: 1px solid rgba(255, 255, 255, 0.35);
+    background: #ffffff;
+    border: none;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -853,16 +854,15 @@ section {
 }
 
 .service-card:hover .service-icon-wrapper {
-    border-color: rgba(255, 255, 255, 0.6);
-    background: rgba(255, 255, 255, 0.28);
+    transform: scale(1.06);
 }
 
 .service-icon {
-    width: 24px;
-    height: 24px;
-    stroke: #ffffff;
+    width: 32px;
+    height: 32px;
+    stroke: var(--card-accent-solid, #14161C);
     fill: none;
-    stroke-width: 1.6;
+    stroke-width: 1.8;
 }
 
 .service-card h3 {
@@ -876,7 +876,6 @@ section {
 .service-card p {
     font-size: 0.95rem;
     margin-bottom: 1.25rem;
-    flex-grow: 1;
     color: rgba(255, 255, 255, 0.92);
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
 }
@@ -1182,7 +1181,7 @@ section {
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 3.5rem; /* now that the arc's reach is narrow, neighbors are basically at rest (small) while one card peaks, so this can be tighter than before without cards clipping each other */
+    gap: 2.25rem; /* now that the arc's reach is narrow, neighbors are basically at rest (small) while one card peaks, so this can be tighter than before without cards clipping each other */
     width: max-content;
     /* Fills what's left of the viewport below .portfolio-scene's own header-
        clearance padding, plus a small bottom buffer. Measured against real
@@ -2042,118 +2041,3 @@ footer .footer-links a {
     .services-grid.stack-active { height: 428px; }
 }
 
-/* ==========================================================================
-   INTRO SCREEN
-   ========================================================================== */
-
-body.intro-open {
-    overflow: hidden;
-}
-
-#intro-screen {
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    background: var(--bg-page);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    transition: opacity 0.4s ease, visibility 0.4s ease;
-}
-
-.intro-content {
-    position: relative;
-    z-index: 3;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.4rem;
-    padding: 2rem;
-    animation: introFadeIn 0.6s ease-out 0.1s both;
-}
-
-@keyframes introFadeIn {
-    from { opacity: 0; transform: translateY(10px) scale(0.97); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-.intro-logo-mark {
-    width: 96px;
-    height: 96px;
-    border-radius: var(--radius-md);
-    background: #FFFFFF;
-    border: 1px solid var(--border-color);
-    box-shadow: var(--shadow-lg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.intro-logo-mark img {
-    width: 76px;
-    height: 76px;
-    object-fit: contain;
-}
-
-.intro-label {
-    font-family: var(--font-sans);
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.3em;
-    color: var(--text-muted);
-    text-transform: uppercase;
-}
-
-.intro-title {
-    font-family: var(--font-display);
-    font-size: clamp(2.6rem, 6.5vw, 4.8rem);
-    font-weight: 500;
-    line-height: 1.08;
-    color: var(--text-primary);
-}
-
-.intro-title span {
-    color: var(--accent);
-    font-style: italic;
-}
-
-.intro-sub {
-    font-size: 1.05rem;
-    color: var(--text-secondary);
-    max-width: 360px;
-}
-
-.intro-btn {
-    margin-top: 0.5rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 0.85rem 1.8rem;
-    font-family: var(--font-sans);
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: var(--bg-page);
-    background: var(--text-primary);
-    border: none;
-    border-radius: var(--radius-sm);
-    cursor: pointer;
-    transition: transform 0.2s ease, background 0.2s ease;
-}
-
-.intro-btn:hover {
-    background: var(--accent);
-    transform: translateY(-1px);
-}
-
-#intro-screen.intro-closing {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-}
-
-.intro-closing .intro-content {
-    transform: translateY(-8px);
-    transition: transform 0.4s ease;
-}

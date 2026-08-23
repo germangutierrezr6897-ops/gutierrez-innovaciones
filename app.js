@@ -6,50 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Computed once and reused by every motion-gated effect below (hero tilt, portfolio tilt/parallax, cursor spotlight)
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    // 1. INTRO SCREEN
-    const introScreen = document.getElementById('intro-screen');
-    const introBtn    = document.getElementById('intro-enter-btn');
-    document.body.classList.add('intro-open');
-
-    function closeIntro() {
-        if (!introScreen || introScreen.classList.contains('intro-closing')) return;
-        introScreen.classList.add('intro-closing');
-        const finish = () => {
-            introScreen.remove();
-            document.body.classList.remove('intro-open');
-        };
-        // GSAP gives a smoother multi-property hand-off (scale + blur + fade)
-        // than the plain CSS opacity fade; falls back to that CSS transition
-        // if the CDN script hasn't loaded yet or reduced-motion is on.
-        if (typeof window.gsap !== 'undefined' && !prefersReducedMotion) {
-            const introContent = introScreen.querySelector('.intro-content');
-            // The CSS transitions on these elements are only meant for the no-GSAP
-            // fallback path below — turn them off so they don't fight GSAP's own tween.
-            introScreen.style.transition = 'none';
-            if (introContent) introContent.style.transition = 'none';
-            gsap.to(introScreen, { opacity: 0, duration: 0.8, ease: 'power2.inOut' });
-            gsap.to(introContent, {
-                scale: 1.08,
-                y: -24,
-                filter: 'blur(8px)',
-                duration: 0.8,
-                ease: 'power2.inOut',
-                onComplete: finish,
-            });
-        } else {
-            setTimeout(finish, 500);
-        }
-    }
-
-    if (introBtn) {
-        introBtn.addEventListener('click', closeIntro);
-    }
-
-    // Splash is a brief brand moment, not a gate — dismiss itself automatically
-    if (introScreen) {
-        setTimeout(closeIntro, 2200);
-    }
-
     // 1.1 HERO STAT COUNT-UP (runs on load, not scroll-gated — the hero is always above the fold)
     const heroStat = document.getElementById('hero-stat');
     if (heroStat) {
@@ -124,8 +80,8 @@ document.addEventListener('DOMContentLoaded', () => {
         requestHeroUpdate();
     }
 
-    // 1.3 LETTER-REVEAL: hero H1 staggers in once the intro splash clears,
-    // every section H2 staggers in each time it scrolls into view — and
+    // 1.3 LETTER-REVEAL: hero H1 staggers in on load, every section H2
+    // staggers in each time it scrolls into view — and
     // both replay on re-entry (scroll away, then back). Splits by word first
     // (each word an inline-block span) and only then by character inside
     // each word, so line-wrapping still happens at real spaces and never
@@ -189,9 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const heroTitleObserver = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
-                        // First time, wait for the intro splash to finish (2200ms hold + 800ms fade);
-                        // every re-entry after that (scroll away and back) replays immediately.
-                        playChars(heroChars, 24, 0.9, 0.045, heroPlayedOnce ? 0 : 3);
+                        playChars(heroChars, 24, 0.9, 0.045, heroPlayedOnce ? 0 : 0.3);
                         heroPlayedOnce = true;
                     } else {
                         hideChars(heroChars, 24);
@@ -317,22 +271,36 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        gsap.set(portfolioGrid, { x: viewportW }); // first card starts just off-screen right
+        const startX = viewportW * 0.45; // first card starts just off-screen right, not a full viewport away — less dead scroll before it appears
+        gsap.set(portfolioGrid, { x: startX });
         updateCardScales();
 
-        gsap.to(portfolioGrid, {
-            x: -rowWidth, // last card ends fully past the left edge
-            ease: 'none',
-            onUpdate: updateCardScales,
-            scrollTrigger: {
-                trigger: portfolioScene,
-                start: 'top top',
-                end: () => '+=' + Math.round((viewportW + rowWidth) * 0.5), // shorter run than before — less scrolling to get through the whole row
-                pin: true,
-                scrub: 0.7, // more inertia/lag than before — reads as a smooth drift instead of tracking the wheel 1:1
-                anticipatePin: 1,
-            },
-        });
+        // Deferred to the next tick on purpose: the services-grid stack below
+        // also pins (with its own pin-spacer), and a pinned trigger's 'top top'
+        // is measured once at creation — if this runs first, it captures the
+        // page's height *before* that other pin-spacer exists and permanently
+        // under-measures by however much space that spacer reserves (confirmed
+        // by hand: a fresh trigger created after both pins exist lands on the
+        // correct position; ScrollTrigger.refresh() on the already-wrong one
+        // does not self-correct it). Letting the rest of this synchronous
+        // handler — including the services pin — finish first avoids the bad
+        // measurement entirely, which is what was letting the pinned, opaque
+        // portfolio scene engage early and cover the capability band above it.
+        setTimeout(() => {
+            gsap.to(portfolioGrid, {
+                x: -rowWidth, // last card ends fully past the left edge
+                ease: 'none',
+                onUpdate: updateCardScales,
+                scrollTrigger: {
+                    trigger: portfolioScene,
+                    start: 'top top',
+                    end: () => '+=' + Math.round((startX + rowWidth) * 0.5), // matches the actual travel distance (startX to -rowWidth) now that startX is smaller
+                    pin: true,
+                    scrub: 0.7, // more inertia/lag than before — reads as a smooth drift instead of tracking the wheel 1:1
+                    anticipatePin: 1,
+                },
+            });
+        }, 0);
 
         // Browser zoom changes the effective CSS viewport size, which can leave
         // ScrollTrigger's pin measurements stale (it measures once at setup).
@@ -345,6 +313,12 @@ document.addEventListener('DOMContentLoaded', () => {
             resizeRefreshTimer = setTimeout(() => ScrollTrigger.refresh(), 200);
         });
     } else if (!prefersReducedMotion) {
+        // No pointer-fine + wide-viewport here, so this is also what mobile/touch
+        // gets. Mouse tilt only ever fires from real mousemove events (never on
+        // touch), but the scroll-linked piece below runs everywhere — so it
+        // carries the "grows as it passes you" arc feeling onto the single-column
+        // mobile grid too, just vertical (center of viewport) instead of
+        // horizontal, using the same semicircle falloff as the desktop version.
         const portfolioCardStates = portfolioCardEls.map((el, i) => ({
             el,
             factor: (i % 2 === 0) ? -0.04 : 0.06,
@@ -352,10 +326,11 @@ document.addEventListener('DOMContentLoaded', () => {
             rotateY: 0,
             liftY: 0,
             parallaxY: 0,
+            arcScale: 1,
         }));
 
         function applyCardTransform(state) {
-            state.el.style.transform = `perspective(900px) rotateX(${state.rotateX}deg) rotateY(${state.rotateY}deg) translateY(${(state.liftY + state.parallaxY).toFixed(1)}px)`;
+            state.el.style.transform = `perspective(900px) rotateX(${state.rotateX}deg) rotateY(${state.rotateY}deg) translateY(${(state.liftY + state.parallaxY).toFixed(1)}px) scale(${state.arcScale.toFixed(3)})`;
         }
 
         portfolioCardStates.forEach(state => {
@@ -379,10 +354,14 @@ document.addEventListener('DOMContentLoaded', () => {
         let parallaxTicking = false;
         function updateParallax() {
             const vh = window.innerHeight;
+            const maxDist = vh * 0.7;
             portfolioCardStates.forEach(state => {
                 const rect = state.el.getBoundingClientRect();
                 const centerDelta = (rect.top + rect.height / 2) - vh / 2;
                 state.parallaxY = centerDelta * state.factor;
+                const xNorm = Math.max(-1, Math.min(1, centerDelta / maxDist));
+                const arc = Math.sqrt(Math.max(0, 1 - xNorm * xNorm)); // same semicircle falloff as the desktop carousel, applied vertically here
+                state.arcScale = 0.94 + arc * 0.1; // gentler than desktop (0.94–1.04) — cards stay fully legible in a single mobile column, this is a pulse, not a size swing
                 applyCardTransform(state);
             });
             parallaxTicking = false;
@@ -504,7 +483,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             gsap.set(visibleCards, {
                 opacity: 0,
-                y: -50,
+                y: -130,
                 scale: 0.94,
                 rotation: i => (i % 2 === 0 ? -2.4 : 2), // matches the odd/even --tilt values in CSS
             });
@@ -517,13 +496,34 @@ document.addEventListener('DOMContentLoaded', () => {
                     start: 'top top+=' + headerOffset,
                     end: () => '+=' + Math.max(1, visibleCards.length - 1) * 320,
                     pin: true,
-                    scrub: 0.4,
+                    scrub: 0.15,
                     anticipatePin: 1,
+                    // Safety net, independent of whatever the scrub progress
+                    // says: the moment we've scrolled fully past this section,
+                    // force every card invisible, and only let the scrubbed
+                    // opacity take back over once we've scrolled back into
+                    // range. Without this, any pin-boundary drift (a stale
+                    // ScrollTrigger measurement, a resize mid-scroll) can
+                    // leave the last opaque card rendering into whatever
+                    // section comes after — reported as the stack bleeding
+                    // through on top of the Proyectos section.
+                    onLeave: () => gsap.set(visibleCards, { opacity: 0 }),
+                    onEnterBack: () => ScrollTrigger.update(),
                 },
             });
 
+            // Each card gets a full timeline "unit" of scroll (320px, see the
+            // scrollTrigger end above). It spends the first 0.35 of that unit
+            // dropping in from above (-130px) and fading to opaque with a
+            // slight bounce on landing — the remaining ~0.65 is scroll dwell
+            // time where it just sits fully opaque and readable before the
+            // next card starts falling on top of it. Paired with the low
+            // scrub value above (0.15, was 0.6) so the fall tracks the
+            // scroll tightly instead of visibly lagging/catching up behind
+            // it — that lag was reading as the card sitting "out of place"
+            // for a couple of seconds after the user stopped scrolling.
             visibleCards.slice(1).forEach((card, i) => {
-                tl.to(card, { opacity: 1, y: 0, scale: 1, duration: 1, ease: 'power1.out' }, i);
+                tl.to(card, { opacity: 1, y: 0, scale: 1, duration: 0.35, ease: 'back.out(1.5)' }, i);
             });
 
             servicesStackTl = tl;
@@ -532,11 +532,25 @@ document.addEventListener('DOMContentLoaded', () => {
         rebuildServicesStack();
 
         window.addEventListener('load', () => ScrollTrigger.refresh());
+
+        // Only a WIDTH change (rotation, real window resize) needs a full
+        // rebuild — card size and stage height depend on it. Mobile browsers
+        // fire plain `resize` for the URL bar showing/hiding on scroll,
+        // which only changes height; rebuilding then kills and recreates the
+        // ScrollTrigger while the user may already be scrolled well past the
+        // section, and briefly removing its pin-spacer shrinks the page
+        // enough that the browser clamps scroll position — which can land
+        // back inside the (now recreated) trigger's range and pin it again
+        // on top of whatever section the user has actually scrolled to.
         let servicesResizeTimer = null;
+        let lastServicesWidth = window.innerWidth;
         window.addEventListener('resize', () => {
             clearTimeout(servicesResizeTimer);
             servicesResizeTimer = setTimeout(() => {
-                rebuildServicesStack();
+                if (window.innerWidth !== lastServicesWidth) {
+                    lastServicesWidth = window.innerWidth;
+                    rebuildServicesStack();
+                }
                 ScrollTrigger.refresh();
             }, 200);
         });

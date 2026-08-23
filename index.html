@@ -78,23 +78,6 @@
 </head>
 <body>
 
-    <!-- ========== INTRO SCREEN ========== -->
-    <div id="intro-screen">
-        <div class="intro-content">
-            <div class="intro-logo-mark">
-                <img src="assets/logo-mark.png" alt="Gutiérrez Innovaciones CL">
-            </div>
-            <p class="intro-label">GUTIÉRREZ INNOVACIONES CL</p>
-            <p class="intro-title">El Futuro<br><span>se Construye</span><br>Hoy.</p>
-            <p class="intro-sub">Soluciones digitales que transforman negocios.</p>
-            <button id="intro-enter-btn" class="intro-btn">
-                <span>Ingresar</span>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-            </button>
-        </div>
-    </div>
-    <!-- ========== END INTRO SCREEN ========== -->
-
     <!-- Header / Navigation -->
     <header id="site-header">
         <div class="container nav-container">
@@ -106,9 +89,9 @@
             <nav>
                 <ul class="nav-links" id="nav-menu">
                     <li><a href="#hero">Inicio</a></li>
+                    <li><a href="#about">Nosotros</a></li>
                     <li><a href="#services">Servicios</a></li>
                     <li><a href="#portfolio">Proyectos</a></li>
-                    <li><a href="#about">Nosotros</a></li>
                     <li><a href="#contact">Contacto</a></li>
                     <li><a href="#contact" class="btn btn-primary" style="padding: 0.5rem 1.2rem; font-size: 0.8rem;">Cotizar</a></li>
                 </ul>
@@ -171,6 +154,102 @@
             <span aria-hidden="true">React</span><span aria-hidden="true">Next.js</span><span aria-hidden="true">FastAPI</span><span aria-hidden="true">PostgreSQL</span><span aria-hidden="true">TypeScript</span><span aria-hidden="true">Tailwind CSS</span><span aria-hidden="true">Docker</span><span aria-hidden="true">Prisma</span><span aria-hidden="true">Node.js</span><span aria-hidden="true">Python</span>
         </div>
     </div>
+
+    <!-- About Section -->
+    <section id="about" class="about">
+        <div class="container about-grid">
+            <div class="about-text reveal">
+                <span class="section-subtitle">¿Quiénes Somos?</span>
+                <h2 class="section-title">Impulsamos la Transformación Digital en Chile</h2>
+                <p>
+                    En <strong>Gutiérrez Innovaciones CL</strong>, entendemos que la tecnología debe adaptarse a tu negocio, y no al revés. Contamos con un equipo especializado en el diseño de arquitecturas estables, interfaces fluidas e integraciones inteligentes.
+                </p>
+                <p>
+                    Nuestros desarrollos no solo lucen impecables y modernos, sino que están construidos para soportar cargas pesadas de tráfico, proteger datos confidenciales y garantizar la continuidad operacional de tu negocio.
+                </p>
+            </div>
+
+            <!-- Photo + floating stats -->
+            <div class="about-visual reveal">
+                <div class="about-photo">
+                    <img class="about-photo-img" src="assets/photos/server-accent.jpg" alt="Equipo trabajando en un proyecto digital">
+                    <video class="about-photo-video" autoplay muted loop playsinline poster="assets/photos/server-accent.jpg">
+                        <source src="assets/videos/about-team-meeting.mp4" type="video/mp4">
+                    </video>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" data-target="99">0%</div>
+                        <div class="stat-label">Uptime Servidores</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" data-target="50">0+</div>
+                        <div class="stat-label">Proyectos Entregados</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" data-target="4">0 sem</div>
+                        <div class="stat-label">Entrega Promedio</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" data-target="100">0%</div>
+                        <div class="stat-label">Clientes Satisfechos</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Founder -->
+        <div class="container">
+            <div class="founder-card reveal">
+                <div class="founder-photo-wrap">
+                    <img class="founder-photo" src="assets/photos/founder.jpg" alt="Germán Gutiérrez, Fundador y CEO de Gutiérrez Innovaciones CL">
+                </div>
+                <div class="founder-content">
+                    <span class="founder-quote-mark">&ldquo;</span>
+                    <div class="founder-bio">
+                        <p>He pasado por distintos emprendimientos y negocios, y esa experiencia me convenció de algo: hoy no se puede competir sin acoger la tecnología y estar a la vanguardia. Eso es lo que nos mueve — que las pymes crezcan y que cada empresa con la que trabajamos entre en una lógica de mejora continua.</p>
+                        <p>Soy especialista en IA avanzada, con foco en análisis de datos y análisis de negocio, y mi formación en Ingeniería Industrial me da una mirada crítica y estructurada para ser un aporte sustantivo a tu organización, no solo entregar código.</p>
+                        <p>Ya llevamos más de 100 servicios entregados, y seguimos preparándonos día a día para los nuevos desafíos de nuestros clientes.</p>
+                    </div>
+                    <div class="founder-meta">
+                        <span class="founder-name">Germán Gutiérrez</span>
+                        <span class="founder-role">Fundador &amp; CEO, Gutiérrez Innovaciones CL</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- "Cómo trabajamos" process -->
+        <div class="container">
+            <div class="section-header reveal">
+                <span class="section-subtitle">Metodología</span>
+                <h2 class="section-title">Cómo Trabajamos</h2>
+                <p>Un proceso claro de principio a fin, para que siempre sepas en qué etapa está tu proyecto.</p>
+            </div>
+            <div class="process-grid">
+                <div class="process-step reveal">
+                    <span class="process-step-number">01</span>
+                    <h4>Descubrimiento</h4>
+                    <p>Levantamos tus requerimientos reales: procesos, usuarios y objetivos de negocio.</p>
+                </div>
+                <div class="process-step reveal">
+                    <span class="process-step-number">02</span>
+                    <h4>Propuesta técnica</h4>
+                    <p>Definimos alcance, arquitectura, plazos y presupuesto cerrado antes de empezar a construir.</p>
+                </div>
+                <div class="process-step reveal">
+                    <span class="process-step-number">03</span>
+                    <h4>Desarrollo iterativo</h4>
+                    <p>Entregas parciales y revisables, para validar avances antes de seguir a la siguiente etapa.</p>
+                </div>
+                <div class="process-step reveal">
+                    <span class="process-step-number">04</span>
+                    <h4>Lanzamiento & soporte</h4>
+                    <p>Puesta en producción acompañada y soporte técnico posterior al lanzamiento.</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- Services Section -->
     <section id="services" class="services">
@@ -510,102 +589,6 @@
         </div>
     </section>
 
-    <!-- About Section -->
-    <section id="about" class="about">
-        <div class="container about-grid">
-            <div class="about-text reveal">
-                <span class="section-subtitle">¿Quiénes Somos?</span>
-                <h2 class="section-title">Impulsamos la Transformación Digital en Chile</h2>
-                <p>
-                    En <strong>Gutiérrez Innovaciones CL</strong>, entendemos que la tecnología debe adaptarse a tu negocio, y no al revés. Contamos con un equipo especializado en el diseño de arquitecturas estables, interfaces fluidas e integraciones inteligentes.
-                </p>
-                <p>
-                    Nuestros desarrollos no solo lucen impecables y modernos, sino que están construidos para soportar cargas pesadas de tráfico, proteger datos confidenciales y garantizar la continuidad operacional de tu negocio.
-                </p>
-            </div>
-
-            <!-- Photo + floating stats -->
-            <div class="about-visual reveal">
-                <div class="about-photo">
-                    <img class="about-photo-img" src="assets/photos/server-accent.jpg" alt="Equipo trabajando en un proyecto digital">
-                    <video class="about-photo-video" autoplay muted loop playsinline poster="assets/photos/server-accent.jpg">
-                        <source src="assets/videos/about-team-meeting.mp4" type="video/mp4">
-                    </video>
-                </div>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-number" data-target="99">0%</div>
-                        <div class="stat-label">Uptime Servidores</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" data-target="50">0+</div>
-                        <div class="stat-label">Proyectos Entregados</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" data-target="4">0 sem</div>
-                        <div class="stat-label">Entrega Promedio</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" data-target="100">0%</div>
-                        <div class="stat-label">Clientes Satisfechos</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Founder -->
-        <div class="container">
-            <div class="founder-card reveal">
-                <div class="founder-photo-wrap">
-                    <img class="founder-photo" src="assets/photos/founder.jpg" alt="Germán Gutiérrez, Fundador y CEO de Gutiérrez Innovaciones CL">
-                </div>
-                <div class="founder-content">
-                    <span class="founder-quote-mark">&ldquo;</span>
-                    <div class="founder-bio">
-                        <p>He pasado por distintos emprendimientos y negocios, y esa experiencia me convenció de algo: hoy no se puede competir sin acoger la tecnología y estar a la vanguardia. Eso es lo que nos mueve — que las pymes crezcan y que cada empresa con la que trabajamos entre en una lógica de mejora continua.</p>
-                        <p>Soy especialista en IA avanzada, con foco en análisis de datos y análisis de negocio, y mi formación en Ingeniería Industrial me da una mirada crítica y estructurada para ser un aporte sustantivo a tu organización, no solo entregar código.</p>
-                        <p>Ya llevamos más de 100 servicios entregados, y seguimos preparándonos día a día para los nuevos desafíos de nuestros clientes.</p>
-                    </div>
-                    <div class="founder-meta">
-                        <span class="founder-name">Germán Gutiérrez</span>
-                        <span class="founder-role">Fundador &amp; CEO, Gutiérrez Innovaciones CL</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- "Cómo trabajamos" process -->
-        <div class="container">
-            <div class="section-header reveal">
-                <span class="section-subtitle">Metodología</span>
-                <h2 class="section-title">Cómo Trabajamos</h2>
-                <p>Un proceso claro de principio a fin, para que siempre sepas en qué etapa está tu proyecto.</p>
-            </div>
-            <div class="process-grid">
-                <div class="process-step reveal">
-                    <span class="process-step-number">01</span>
-                    <h4>Descubrimiento</h4>
-                    <p>Levantamos tus requerimientos reales: procesos, usuarios y objetivos de negocio.</p>
-                </div>
-                <div class="process-step reveal">
-                    <span class="process-step-number">02</span>
-                    <h4>Propuesta técnica</h4>
-                    <p>Definimos alcance, arquitectura, plazos y presupuesto cerrado antes de empezar a construir.</p>
-                </div>
-                <div class="process-step reveal">
-                    <span class="process-step-number">03</span>
-                    <h4>Desarrollo iterativo</h4>
-                    <p>Entregas parciales y revisables, para validar avances antes de seguir a la siguiente etapa.</p>
-                </div>
-                <div class="process-step reveal">
-                    <span class="process-step-number">04</span>
-                    <h4>Lanzamiento & soporte</h4>
-                    <p>Puesta en producción acompañada y soporte técnico posterior al lanzamiento.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Contact Section -->
     <section id="contact" class="contact">
         <div class="container contact-grid">
@@ -719,9 +702,9 @@
                 <h3>Enlaces Rápidos</h3>
                 <ul>
                     <li><a href="#hero">Inicio</a></li>
+                    <li><a href="#about">Nosotros</a></li>
                     <li><a href="#services">Servicios</a></li>
                     <li><a href="#portfolio">Proyectos</a></li>
-                    <li><a href="#about">Nosotros</a></li>
                     <li><a href="#contact">Contacto</a></li>
                 </ul>
             </div>
