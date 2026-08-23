@@ -389,6 +389,17 @@ nav {
     opacity: 0.5;
 }
 
+/* Background videos sit above their host's background-image, which stays in
+   place underneath as the poster/fallback (slow connections, autoplay blocked,
+   reduced motion). */
+.bg-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
 .hero-bg-overlay {
     position: absolute;
     inset: 0;
@@ -418,13 +429,7 @@ nav {
 }
 
 .hero-depth-layer--lines {
-    background-image:
-        linear-gradient(var(--border-color) 1px, transparent 1px),
-        linear-gradient(90deg, var(--border-color) 1px, transparent 1px);
-    background-size: 56px 56px;
-    -webkit-mask-image: radial-gradient(55% 55% at 72% 42%, black 0%, transparent 100%);
-    mask-image: radial-gradient(55% 55% at 72% 42%, black 0%, transparent 100%);
-    opacity: 0.5;
+    display: none;
 }
 
 .hero-grid {
@@ -684,7 +689,7 @@ section {
     margin-bottom: 1.25rem;
 }
 
-/* Services Section — Bento grid */
+/* Services Section — stacked deck of vivid cards */
 .services-tabs-container {
     margin-top: 2rem;
 }
@@ -723,59 +728,123 @@ section {
 }
 
 .services-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-auto-flow: dense;
-    align-items: start;
-    gap: 1.25rem;
+    display: block;
+    padding-bottom: 3rem;
     transition: opacity var(--transition-speed) ease;
-}
-
-.service-card--feature {
-    grid-column: span 2;
-    background: var(--accent-soft);
-    border-color: transparent;
-}
-
-.service-card--feature .service-icon-wrapper {
-    background: var(--bg-elevated);
 }
 
 .service-card {
     position: relative;
-    background: linear-gradient(160deg, var(--bg-elevated) 0%, color-mix(in srgb, var(--bg-elevated) 96%, var(--accent)) 100%);
-    border: 1px solid var(--border-color);
+    z-index: 1;
+    background: var(--card-grad);
+    border: 1px solid rgba(255, 255, 255, 0.14);
     border-radius: var(--radius-md);
     padding: 2rem;
-    transition: var(--transition-speed) var(--transition-curve);
+    width: min(520px, 88vw);
+    margin: 0 auto;
+    transition: transform var(--transition-speed) var(--transition-curve), box-shadow var(--transition-speed) var(--transition-curve);
+    transform: rotate(var(--tilt, 0deg));
     display: flex;
     flex-direction: column;
-    box-shadow: var(--shadow-card);
+    min-height: 480px;
+    box-shadow: 0 20px 45px -18px var(--card-accent), var(--shadow-card);
     overflow: hidden;
+}
+
+/* Same specificity as .service-card — declared after it so this override
+   (bigger shadow, same size — real decks keep every card the same size)
+   actually wins instead of losing the cascade tie. */
+.service-card--feature {
+    box-shadow: 0 26px 55px -16px var(--card-accent), var(--shadow-lg);
+}
+
+/* Cinematic pinned stack — progressive enhancement, see app.js. When GSAP +
+   ScrollTrigger are available, .stack-active is added and every card is
+   pulled onto the exact same spot; JS then fades/drops each one in as you
+   scroll, one at a time, while the section stays pinned. The plain
+   overlapping column above (negative-margin .service-card rules) is the
+   fallback for no-JS and prefers-reduced-motion. */
+.services-grid.stack-active {
+    position: relative;
+    height: 528px;
+    max-width: 560px;
+    margin: 0 auto;
+    padding-bottom: 0;
+}
+
+.services-grid.stack-active .service-card {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+    margin: auto;
 }
 
 .service-card::before {
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(220px circle at var(--spot-x, 50%) var(--spot-y, 0%), color-mix(in srgb, var(--accent) 14%, transparent), transparent 70%);
+    background: radial-gradient(220px circle at var(--spot-x, 50%) var(--spot-y, 0%), rgba(255, 255, 255, 0.35), transparent 70%);
     opacity: var(--spotlight-opacity);
     transition: opacity 0.3s ease;
     pointer-events: none;
 }
 
 .service-card:hover {
-    border-color: var(--border-strong);
-    box-shadow: var(--shadow-md);
-    transform: translateY(-4px);
+    box-shadow: 0 30px 60px -14px var(--card-accent), var(--shadow-md);
+    transform: rotate(0deg) translateY(-10px) scale(1.015);
 }
+
+/* .service-card also carries the generic .reveal/.reveal.active entrance
+   classes, which set their own `transform` — bump specificity here so the
+   tilt/hover transforms above always win instead of losing the cascade tie. */
+.service-card.reveal { transform: translateY(24px) rotate(var(--tilt, 0deg)); }
+.service-card.reveal.active { transform: translateY(0) rotate(var(--tilt, 0deg)); }
+.service-card.reveal.active:hover {
+    transform: translateY(-10px) rotate(0deg) scale(1.015);
+}
+
+/* Fanned/"messy deck" tilt, alternating per card — now that cards are
+   centered squares instead of full-width bars, the tilt actually reads as
+   a stack of playing cards tossed slightly askew. */
+.services-grid .service-card:nth-child(odd) { --tilt: -2.4deg; }
+.services-grid .service-card:nth-child(even) { --tilt: 2deg; }
+
+/* Pull every card but the first up into its predecessor so the whole deck
+   is visibly overlapping at rest, not just after scrolling deep into the
+   section — plain document flow (not scroll-linked), so it reverses for
+   free when scrolling back up. Leaves ~140px of the card behind peeking
+   out above the next one; increasing z-index (below) keeps later cards on
+   top the way a real dealt deck would land. */
+.services-grid:not(.stack-active) .service-card:not(:first-child) { margin-top: -340px; }
+
+/* Vivid color rotation — cycles through 6 saturated gradients */
+.services-grid .service-card:nth-child(6n+1) { --card-grad: linear-gradient(135deg, #3A5CFF 0%, #7B2FF7 100%); --card-accent: rgba(89, 68, 246, 0.45); }
+.services-grid .service-card:nth-child(6n+2) { --card-grad: linear-gradient(135deg, #FF3D68 0%, #FF8A3D 100%); --card-accent: rgba(255, 91, 82, 0.45); }
+.services-grid .service-card:nth-child(6n+3) { --card-grad: linear-gradient(135deg, #06B26B 0%, #05C7C0 100%); --card-accent: rgba(6, 178, 145, 0.45); }
+.services-grid .service-card:nth-child(6n+4) { --card-grad: linear-gradient(135deg, #F59E0B 0%, #EA580C 100%); --card-accent: rgba(240, 130, 20, 0.45); }
+.services-grid .service-card:nth-child(6n+5) { --card-grad: linear-gradient(135deg, #8B2FD1 0%, #D6249F 100%); --card-accent: rgba(178, 47, 178, 0.45); }
+.services-grid .service-card:nth-child(6n+6) { --card-grad: linear-gradient(135deg, #0EA5E9 0%, #2563EB 100%); --card-accent: rgba(20, 130, 230, 0.45); }
+
+/* z-index order for the deck — later cards render on top of earlier ones
+   wherever the negative-margin overlap above makes them intersect. */
+.services-grid .service-card:nth-child(1) { z-index: 1; }
+.services-grid .service-card:nth-child(2) { z-index: 2; }
+.services-grid .service-card:nth-child(3) { z-index: 3; }
+.services-grid .service-card:nth-child(4) { z-index: 4; }
+.services-grid .service-card:nth-child(5) { z-index: 5; }
+.services-grid .service-card:nth-child(6) { z-index: 6; }
+.services-grid .service-card:nth-child(7) { z-index: 7; }
+.services-grid .service-card:nth-child(8) { z-index: 8; }
+.services-grid .service-card:nth-child(9) { z-index: 9; }
+.services-grid .service-card:nth-child(10) { z-index: 10; }
+.services-grid .service-card:nth-child(11) { z-index: 11; }
 
 .service-icon-wrapper {
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    background: linear-gradient(135deg, var(--accent-soft), transparent 70%);
-    border: 1px solid var(--border-color);
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.35);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -784,14 +853,14 @@ section {
 }
 
 .service-card:hover .service-icon-wrapper {
-    border-color: var(--accent);
-    background: linear-gradient(135deg, var(--accent-soft), var(--accent-soft) 70%);
+    border-color: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.28);
 }
 
 .service-icon {
     width: 24px;
     height: 24px;
-    stroke: var(--accent);
+    stroke: #ffffff;
     fill: none;
     stroke-width: 1.6;
 }
@@ -800,23 +869,27 @@ section {
     font-size: 1.2rem;
     margin-bottom: 0.75rem;
     font-weight: 600;
+    color: #ffffff;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.22);
 }
 
 .service-card p {
     font-size: 0.95rem;
     margin-bottom: 1.25rem;
     flex-grow: 1;
+    color: rgba(255, 255, 255, 0.92);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
 }
 
 .service-features {
     list-style: none;
     padding-top: 1rem;
-    border-top: 1px solid var(--border-color);
+    border-top: 1px solid rgba(255, 255, 255, 0.25);
 }
 
 .service-features li {
     font-size: 0.85rem;
-    color: var(--text-secondary);
+    color: rgba(255, 255, 255, 0.88);
     margin-bottom: 0.5rem;
     display: flex;
     align-items: center;
@@ -828,8 +901,13 @@ section {
     width: 4px;
     height: 4px;
     border-radius: 50%;
-    background: var(--accent);
+    background: #ffffff;
     flex-shrink: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .service-card { transition: none; }
+    .service-card:hover { transform: rotate(var(--tilt, 0deg)); }
 }
 
 /* Cinematic Capability Band */
@@ -924,6 +1002,13 @@ section {
     .capability-bg { background-attachment: scroll; }
     .capability-band { min-height: auto; padding: 6rem 0 8rem; }
     .section-divider { height: 60px; }
+    /* Skip the extra video download on mobile data; the poster image already
+       covers this background. */
+    .bg-video, .about-photo-video { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .bg-video, .about-photo-video { display: none; }
 }
 
 /* Portfolio Section */
@@ -1050,6 +1135,18 @@ section {
     position: relative;
 }
 
+.portfolio-scene.cinematic-active {
+    /* Solid, not transparent: this is the element ScrollTrigger pins full-screen.
+       Without an opaque background here, any gap in the depth layers or between
+       cards lets whatever's behind it in the document (the hero) show through. */
+    background: var(--bg-page);
+    /* Header clearance as padding on the SCENE (not margin on the grid below) —
+       margin-top on a child can collapse through into the parent's own box in
+       CSS, which was quietly feeding ScrollTrigger a wrong pin height. Padding
+       never collapses, so this is the safe way to reserve that space. */
+    padding-top: calc(var(--header-height) + 72px); /* generous on purpose — not cut this close to the limit again */
+}
+
 .portfolio-depth-layer {
     display: none;
     position: absolute;
@@ -1063,13 +1160,7 @@ section {
 }
 
 .portfolio-depth-layer--lines {
-    background-image:
-        linear-gradient(var(--border-color) 1px, transparent 1px),
-        linear-gradient(90deg, var(--border-color) 1px, transparent 1px);
-    background-size: 64px 64px;
-    -webkit-mask-image: radial-gradient(60% 60% at 50% 50%, black 0%, transparent 100%);
-    mask-image: radial-gradient(60% 60% at 50% 50%, black 0%, transparent 100%);
-    opacity: 0.7;
+    display: none;
 }
 
 .portfolio-depth-layer--glow-a {
@@ -1091,9 +1182,14 @@ section {
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 3rem;
+    gap: 3.5rem; /* now that the arc's reach is narrow, neighbors are basically at rest (small) while one card peaks, so this can be tighter than before without cards clipping each other */
     width: max-content;
-    height: 100vh;
+    /* Fills what's left of the viewport below .portfolio-scene's own header-
+       clearance padding, plus a small bottom buffer. Measured against real
+       rendered card sizes (~490px tall at rest) so a peak card at 1.15x scale
+       + its arc rise stays inside this box on both edges. Matches the
+       scene's own padding-top (header + 72px) plus a 40px bottom buffer. */
+    height: calc(100vh - var(--header-height) - 112px);
 }
 
 .portfolio-scene.cinematic-active .portfolio-card {
@@ -1158,11 +1254,21 @@ section {
 }
 
 .about-photo {
+    position: relative;
     width: 100%;
     aspect-ratio: 4 / 3;
-    object-fit: cover;
     border-radius: var(--radius-lg);
     border: 1px solid var(--border-color);
+    overflow: hidden;
+}
+
+.about-photo-img,
+.about-photo-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .about-visual .stats-grid {
@@ -1598,6 +1704,245 @@ footer .footer-links a {
     }
 }
 
+/* Virtual Assistant Widget */
+.assistant-widget {
+    position: fixed;
+    right: 1.5rem;
+    bottom: 5.75rem;
+    z-index: 950;
+}
+
+@keyframes assistantPulse {
+    0% { box-shadow: 0 0 0 0 rgba(30, 79, 199, 0.35), var(--shadow-lg); }
+    70% { box-shadow: 0 0 0 14px rgba(30, 79, 199, 0), var(--shadow-lg); }
+    100% { box-shadow: 0 0 0 0 rgba(30, 79, 199, 0), var(--shadow-lg); }
+}
+
+.assistant-launcher {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    padding: 0;
+    border: 3px solid var(--bg-elevated);
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: var(--shadow-lg);
+    background: var(--bg-elevated);
+    animation: assistantPulse 2.6s ease-out infinite;
+    transition: transform var(--transition-speed) var(--transition-curve);
+}
+
+.assistant-launcher.active {
+    animation: none;
+}
+
+.assistant-launcher:hover {
+    transform: translateY(-3px) scale(1.05);
+}
+
+.assistant-launcher img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.assistant-launcher-dot {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #25D366;
+    border: 2px solid var(--bg-elevated);
+}
+
+.assistant-panel {
+    position: absolute;
+    right: 0;
+    bottom: 78px;
+    width: 340px;
+    max-width: calc(100vw - 2rem);
+    height: 460px;
+    max-height: 70vh;
+    background: var(--bg-elevated);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(16px) scale(0.97);
+    pointer-events: none;
+    transition: opacity 0.25s var(--transition-curve), transform 0.25s var(--transition-curve);
+}
+
+.assistant-panel.active {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+}
+
+.assistant-panel-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.1rem;
+    background: var(--bg-inverse);
+    color: var(--bg-page);
+    flex-shrink: 0;
+}
+
+.assistant-panel-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.assistant-panel-heading {
+    flex: 1;
+    min-width: 0;
+}
+
+.assistant-panel-heading h4 {
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    margin: 0 0 0.15rem;
+    color: var(--bg-page);
+}
+
+.assistant-panel-heading span {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.75rem;
+    color: color-mix(in srgb, var(--bg-page) 70%, transparent);
+}
+
+.assistant-status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #25D366;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+.assistant-panel-close {
+    background: none;
+    border: none;
+    color: var(--bg-page);
+    cursor: pointer;
+    padding: 0.25rem;
+    display: flex;
+    opacity: 0.75;
+    flex-shrink: 0;
+    transition: opacity var(--transition-speed);
+}
+
+.assistant-panel-close:hover {
+    opacity: 1;
+}
+
+.assistant-panel-body {
+    flex: 1;
+    padding: 1rem;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    background: var(--bg-subtle);
+}
+
+.assistant-msg {
+    max-width: 82%;
+    padding: 0.6rem 0.85rem;
+    border-radius: var(--radius-md);
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    line-height: 1.45;
+}
+
+.assistant-msg--bot {
+    align-self: flex-start;
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    border-bottom-left-radius: 4px;
+    box-shadow: var(--shadow-sm);
+}
+
+.assistant-msg--user {
+    align-self: flex-end;
+    background: var(--accent);
+    color: var(--accent-contrast);
+    border-bottom-right-radius: 4px;
+}
+
+.assistant-panel-input {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: var(--bg-elevated);
+    border-top: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+
+.assistant-panel-input input {
+    flex: 1;
+    min-width: 0;
+    border: 1px solid var(--border-color);
+    background: var(--bg-page);
+    border-radius: 999px;
+    padding: 0.55rem 1rem;
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    outline: none;
+    transition: border-color var(--transition-speed);
+}
+
+.assistant-panel-input input:focus {
+    border-color: var(--accent);
+}
+
+.assistant-panel-input button {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: none;
+    background: var(--accent);
+    color: var(--accent-contrast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: transform var(--transition-speed);
+}
+
+.assistant-panel-input button:hover {
+    transform: scale(1.06);
+}
+
+@media (max-width: 768px) {
+    .assistant-widget {
+        right: 1rem;
+        bottom: 4.75rem;
+    }
+    .assistant-launcher {
+        width: 52px;
+        height: 52px;
+    }
+    .assistant-panel {
+        bottom: 68px;
+        width: 320px;
+    }
+}
+
 /* Scroll Animation Reveal Styles */
 .reveal {
     opacity: 0;
@@ -1642,7 +1987,6 @@ footer .footer-links a {
     .hero-tagline::before { display: none; }
     .hero-description { margin-left: auto; margin-right: auto; }
     .hero-buttons { justify-content: center; }
-    .services-grid { grid-template-columns: repeat(2, 1fr); }
     .portfolio-grid { grid-template-columns: 1fr; }
     .about-grid, .contact-grid {
         grid-template-columns: 1fr;
@@ -1685,13 +2029,17 @@ footer .footer-links a {
 }
 
 @media (max-width: 768px) {
-    .services-grid { grid-template-columns: 1fr; }
-    .service-card--feature { grid-column: span 1; }
     .form-row { grid-template-columns: 1fr; gap: 0; }
     .footer-grid { grid-template-columns: 1fr; }
     .hero-title { font-size: 2.4rem; }
     .section-title { font-size: 2rem; }
     .process-grid { grid-template-columns: 1fr; }
+
+    /* Smaller card on mobile, scaled the same way as the desktop values so
+       the deck still overlaps proportionally instead of spreading out. */
+    .service-card { min-height: 380px; padding: 1.6rem; }
+    .services-grid:not(.stack-active) .service-card:not(:first-child) { margin-top: -290px; }
+    .services-grid.stack-active { height: 428px; }
 }
 
 /* ==========================================================================

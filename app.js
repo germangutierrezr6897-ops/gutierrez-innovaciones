@@ -282,12 +282,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (useCinematicPortfolio) {
         gsap.registerPlugin(ScrollTrigger);
+        // Unifies how mouse-wheel/trackpad scroll deltas get read across browsers —
+        // without it, chunky wheel input can make a scrubbed animation feel like
+        // it's stepping instead of flowing. This is the standard GSAP fix for that.
+        ScrollTrigger.normalizeScroll(true);
         portfolioScene.classList.add('cinematic-active');
         portfolioCardEls.forEach(card => card.classList.remove('reveal')); // GSAP owns opacity/transform now, not the IntersectionObserver reveal system
 
         const viewportW = window.innerWidth;
         const rowWidth = portfolioGrid.scrollWidth; // read once, after the flex layout from .cinematic-active has applied
-        const maxDist = viewportW * 0.55;
+        const maxDist = viewportW * 0.28; // narrower reach = the grow/shrink happens over less horizontal travel, so the arc reads as an actual curve instead of a long flat plateau
         const cardMetrics = portfolioCardEls.map(el => ({
             el,
             center: el.offsetLeft + el.offsetWidth / 2,
@@ -304,9 +308,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 // past the viewer" path instead of a flat horizontal slide.
                 const arc = Math.sqrt(Math.max(0, 1 - xNorm * xNorm));
                 gsap.set(el, {
-                    scale: 0.55 + arc * 0.8,     // born small, swells to its largest dead-center
-                    opacity: 0.35 + arc * 0.65,
-                    y: -arc * 130,                // rises into the arc as it crosses, settles back down at the edges
+                    scale: 0.6 + arc * 0.45,     // born small, swells to its largest dead-center (max 1.05x — kept modest on purpose, with real margin to spare even on shorter/laptop-height viewports)
+                    opacity: 0.3 + arc * 0.7,
+                    y: -arc * 65,                  // rises into the arc as it crosses, settles back down at the edges — big enough to actually read as a curved path, not just a size change
+                    zIndex: Math.round(arc * 100), // whichever card is closest/biggest always renders on top of its neighbors
+                    force3D: true,                 // keeps this on the GPU compositor instead of falling back to a CPU-painted transform
                 });
             });
         }
@@ -321,11 +327,22 @@ document.addEventListener('DOMContentLoaded', () => {
             scrollTrigger: {
                 trigger: portfolioScene,
                 start: 'top top',
-                end: () => '+=' + Math.round((viewportW + rowWidth) * 0.7), // short & agile, not a 1:1 scroll-to-pixel crawl
+                end: () => '+=' + Math.round((viewportW + rowWidth) * 0.5), // shorter run than before — less scrolling to get through the whole row
                 pin: true,
-                scrub: 0.4,
+                scrub: 0.7, // more inertia/lag than before — reads as a smooth drift instead of tracking the wheel 1:1
                 anticipatePin: 1,
             },
+        });
+
+        // Browser zoom changes the effective CSS viewport size, which can leave
+        // ScrollTrigger's pin measurements stale (it measures once at setup).
+        // Force a recompute after full load and on resize/zoom so the pin
+        // position and boundaries stay correct instead of drifting.
+        window.addEventListener('load', () => ScrollTrigger.refresh());
+        let resizeRefreshTimer = null;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeRefreshTimer);
+            resizeRefreshTimer = setTimeout(() => ScrollTrigger.refresh(), 200);
         });
     } else if (!prefersReducedMotion) {
         const portfolioCardStates = portfolioCardEls.map((el, i) => ({
@@ -426,6 +443,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const tabButtons = document.querySelectorAll('.tab-btn');
     const serviceCards = document.querySelectorAll('.service-card');
     const servicesGrid = document.getElementById('services-grid');
+    let rebuildServicesStack = null; // assigned below in "4. SERVICES CINEMATIC STACK" when GSAP is driving the section
 
     tabButtons.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -448,10 +466,81 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
 
                     servicesGrid.style.opacity = '1';
+
+                    if (rebuildServicesStack) rebuildServicesStack();
                 }, 300);
             }
         });
     });
+
+    // 4. SERVICES CINEMATIC STACK — cards fade in and drop into place one at
+    // a time, on top of the previous one, while the section stays pinned in
+    // the viewport (instead of scrolling past as a tall column of cards).
+    // Progressive enhancement: the plain overlapping column defined in CSS
+    // (the negative-margin .service-card rules) is what's on screen already
+    // and stays as the fallback when GSAP/ScrollTrigger aren't available or
+    // the user prefers reduced motion.
+    const serviceCardEls = Array.from(document.querySelectorAll('.services-grid .service-card'));
+    const useCinematicServices = !prefersReducedMotion && servicesGrid && serviceCardEls.length > 0 &&
+        typeof window.gsap !== 'undefined' && typeof window.ScrollTrigger !== 'undefined';
+
+    if (useCinematicServices) {
+        gsap.registerPlugin(ScrollTrigger);
+        servicesGrid.classList.add('stack-active');
+        serviceCardEls.forEach(card => card.classList.remove('reveal')); // GSAP owns opacity/transform now, not the IntersectionObserver reveal system
+
+        let servicesStackTl = null;
+        const headerEl = document.querySelector('header');
+
+        rebuildServicesStack = () => {
+            if (servicesStackTl) {
+                servicesStackTl.scrollTrigger.kill();
+                servicesStackTl.kill();
+                servicesStackTl = null;
+            }
+
+            const visibleCards = serviceCardEls.filter(card => getComputedStyle(card).display !== 'none');
+            if (visibleCards.length === 0) return;
+
+            gsap.set(visibleCards, {
+                opacity: 0,
+                y: -50,
+                scale: 0.94,
+                rotation: i => (i % 2 === 0 ? -2.4 : 2), // matches the odd/even --tilt values in CSS
+            });
+            gsap.set(visibleCards[0], { opacity: 1, y: 0, scale: 1 });
+
+            const headerOffset = (headerEl ? headerEl.offsetHeight : 84) + 16;
+            const tl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: servicesGrid,
+                    start: 'top top+=' + headerOffset,
+                    end: () => '+=' + Math.max(1, visibleCards.length - 1) * 320,
+                    pin: true,
+                    scrub: 0.4,
+                    anticipatePin: 1,
+                },
+            });
+
+            visibleCards.slice(1).forEach((card, i) => {
+                tl.to(card, { opacity: 1, y: 0, scale: 1, duration: 1, ease: 'power1.out' }, i);
+            });
+
+            servicesStackTl = tl;
+        };
+
+        rebuildServicesStack();
+
+        window.addEventListener('load', () => ScrollTrigger.refresh());
+        let servicesResizeTimer = null;
+        window.addEventListener('resize', () => {
+            clearTimeout(servicesResizeTimer);
+            servicesResizeTimer = setTimeout(() => {
+                rebuildServicesStack();
+                ScrollTrigger.refresh();
+            }, 200);
+        });
+    }
 
     // 5. INTERSECTION OBSERVER FOR SCROLL REVEALS
     const revealElements = document.querySelectorAll('.reveal');
@@ -535,6 +624,67 @@ document.addEventListener('DOMContentLoaded', () => {
                 formStatus.classList.remove('success');
                 formStatus.style.display = 'none';
             }, 8000);
+        });
+    }
+
+    // 8. VIRTUAL ASSISTANT WIDGET: not a real chatbot — it hands the visitor's
+    // message off to WhatsApp (opens wa.me pre-filled with their text, they
+    // just tap send there) and shows a canned confirmation bubble in the
+    // widget itself, since a static site has no backend to send messages for real.
+    const assistantLauncher = document.getElementById('assistant-launcher');
+    const assistantPanel = document.getElementById('assistant-panel');
+    const assistantClose = document.getElementById('assistant-close');
+    const assistantForm = document.getElementById('assistant-form');
+    const assistantInput = document.getElementById('assistant-input');
+    const assistantMessages = document.getElementById('assistant-messages');
+    const ASSISTANT_WHATSAPP_NUMBER = '56931335507';
+
+    if (assistantLauncher && assistantPanel && assistantClose && assistantForm && assistantInput && assistantMessages) {
+        function addAssistantMessage(text, from) {
+            const msg = document.createElement('div');
+            msg.className = `assistant-msg assistant-msg--${from}`;
+            msg.textContent = text;
+            assistantMessages.appendChild(msg);
+            assistantMessages.scrollTop = assistantMessages.scrollHeight;
+        }
+
+        function openAssistant() {
+            assistantPanel.classList.add('active');
+            assistantPanel.setAttribute('aria-hidden', 'false');
+            assistantLauncher.classList.add('active');
+            assistantInput.focus();
+        }
+
+        function closeAssistant() {
+            assistantPanel.classList.remove('active');
+            assistantPanel.setAttribute('aria-hidden', 'true');
+            assistantLauncher.classList.remove('active');
+        }
+
+        assistantLauncher.addEventListener('click', () => {
+            if (assistantPanel.classList.contains('active')) {
+                closeAssistant();
+            } else {
+                openAssistant();
+            }
+        });
+
+        assistantClose.addEventListener('click', closeAssistant);
+
+        assistantForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const text = assistantInput.value.trim();
+            if (!text) return;
+
+            addAssistantMessage(text, 'user');
+            assistantInput.value = '';
+
+            const waMessage = `Hola Germán, te escribo desde el sitio web:\n\n${text}`;
+            window.open(`https://wa.me/${ASSISTANT_WHATSAPP_NUMBER}?text=${encodeURIComponent(waMessage)}`, '_blank', 'noopener');
+
+            setTimeout(() => {
+                addAssistantMessage('¡Gracias! Tu mensaje se abrió en WhatsApp, solo dale enviar. En breve nos comunicamos contigo. 😊', 'bot');
+            }, 500);
         });
     }
 });

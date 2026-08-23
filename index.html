@@ -41,7 +41,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- CSS Stylesheet -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=2">
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="assets/favicon.png" onerror="this.onerror=null; this.href='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>';">
@@ -124,7 +124,11 @@
 
     <!-- Hero Section -->
     <section id="hero" class="hero">
-        <div class="hero-bg-image" style="background-image: url('assets/photos/desk-accent.jpg');"></div>
+        <div class="hero-bg-image" style="background-image: url('assets/photos/desk-accent.jpg');">
+            <video class="bg-video" autoplay muted loop playsinline poster="assets/photos/desk-accent.jpg">
+                <source src="assets/videos/hero-code-monitor.mp4" type="video/mp4">
+            </video>
+        </div>
         <div class="hero-bg-overlay"></div>
         <div class="hero-depth-layer hero-depth-layer--glow-a" aria-hidden="true"></div>
         <div class="hero-depth-layer hero-depth-layer--glow-b" aria-hidden="true"></div>
@@ -384,7 +388,11 @@
 
     <!-- Cinematic Capability Band -->
     <section class="capability-band">
-        <div class="capability-bg" style="background-image: url('assets/photos/code-band.jpg');"></div>
+        <div class="capability-bg" style="background-image: url('assets/photos/code-band.jpg');">
+            <video class="bg-video" autoplay muted loop playsinline poster="assets/photos/code-band.jpg">
+                <source src="assets/videos/capability-laptop-code.mp4" type="video/mp4">
+            </video>
+        </div>
         <div class="capability-overlay"></div>
         <div class="container capability-content reveal">
             <span class="section-subtitle capability-subtitle">Ingeniería de Software</span>
@@ -475,15 +483,13 @@
                 </a>
 
                 <div class="portfolio-card portfolio-card--dev reveal">
-                    <div class="portfolio-card-image portfolio-card-image--icon">
-                        <div class="portfolio-card-image-grid"></div>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M3 9h18"></path><path d="M9 21V9"></path></svg>
+                    <div class="portfolio-card-image">
+                        <img src="assets/portfolio/petcontrol.png" alt="PetControl — sistema de gestión para tiendas de alimentos para mascotas" loading="lazy">
                     </div>
                     <div class="portfolio-card-body">
                         <span class="portfolio-card-tag">SaaS de Gestión</span>
                         <h3>PetControl</h3>
                         <p>Sistema de gestión operacional para tiendas de alimentos para mascotas: punto de venta, despachos, reposición de stock, recepción de proveedores y reportes.</p>
-                        <span class="portfolio-card-link portfolio-card-link--muted">En desarrollo</span>
                     </div>
                 </div>
 
@@ -520,7 +526,12 @@
 
             <!-- Photo + floating stats -->
             <div class="about-visual reveal">
-                <img class="about-photo" src="assets/photos/server-accent.jpg" alt="Infraestructura y servidores">
+                <div class="about-photo">
+                    <img class="about-photo-img" src="assets/photos/server-accent.jpg" alt="Equipo trabajando en un proyecto digital">
+                    <video class="about-photo-video" autoplay muted loop playsinline poster="assets/photos/server-accent.jpg">
+                        <source src="assets/videos/about-team-meeting.mp4" type="video/mp4">
+                    </video>
+                </div>
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-number" data-target="99">0%</div>
@@ -737,6 +748,36 @@
     <a class="whatsapp-float" href="https://wa.me/56931335507" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21h.01c5.46 0 9.9-4.45 9.9-9.91 0-2.65-1.03-5.13-2.9-7C17.19 3.03 14.7 2 12.04 2zm5.8 14.17c-.24.68-1.4 1.3-1.94 1.38-.5.08-1.12.11-1.81-.11-.42-.13-.95-.31-1.64-.6-2.88-1.24-4.76-4.14-4.9-4.33-.14-.19-1.18-1.57-1.18-3 0-1.42.75-2.12 1.01-2.41.27-.29.58-.36.78-.36.19 0 .39 0 .55.01.18.01.42-.07.65.5.24.58.81 2 .88 2.14.07.15.12.32.02.51-.09.19-.14.31-.28.48-.14.16-.29.36-.42.49-.14.14-.28.28-.12.56.16.28.71 1.17 1.53 1.9 1.05.94 1.94 1.23 2.22 1.37.28.14.44.12.6-.07.16-.19.68-.79.87-1.06.18-.28.37-.23.61-.14.25.09 1.58.75 1.85.88.27.14.45.2.51.32.07.12.07.68-.17 1.35z"></path></svg>
     </a>
+
+    <!-- Virtual Assistant Widget -->
+    <div class="assistant-widget">
+        <button class="assistant-launcher" id="assistant-launcher" aria-label="Abrir asistente virtual">
+            <img src="assets/photos/founder.jpg" alt="Germán Gutiérrez">
+            <span class="assistant-launcher-dot" aria-hidden="true"></span>
+        </button>
+
+        <div class="assistant-panel" id="assistant-panel" role="dialog" aria-label="Asistente virtual" aria-hidden="true">
+            <div class="assistant-panel-header">
+                <img class="assistant-panel-avatar" src="assets/photos/founder.jpg" alt="Germán Gutiérrez">
+                <div class="assistant-panel-heading">
+                    <h4>Germán</h4>
+                    <span><span class="assistant-status-dot"></span>Asistente virtual</span>
+                </div>
+                <button type="button" class="assistant-panel-close" id="assistant-close" aria-label="Cerrar chat">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <div class="assistant-panel-body" id="assistant-messages">
+                <div class="assistant-msg assistant-msg--bot">Hola 👋 soy Germán. ¿En qué puedo ayudarte con tu proyecto?</div>
+            </div>
+            <form class="assistant-panel-input" id="assistant-form">
+                <input type="text" id="assistant-input" placeholder="Escribe tu mensaje..." autocomplete="off" required>
+                <button type="submit" aria-label="Enviar mensaje">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                </button>
+            </form>
+        </div>
+    </div>
 
     <!-- GSAP + ScrollTrigger (portfolio cinematic scroll — app.js checks these loaded before using them, degrades to the plain grid otherwise) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
