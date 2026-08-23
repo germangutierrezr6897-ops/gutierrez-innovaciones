@@ -777,6 +777,12 @@ section {
     inset: 0;
     height: 100%;
     margin: auto;
+    /* The base .service-card width uses 88vw, which measures against the raw
+       viewport and ignores this container's own padding — on narrow screens
+       that made the card wider than the space actually available here,
+       overflowing off-center to one side. 100% resolves against this
+       (already correctly centered) container instead, so it never overflows. */
+    width: min(520px, 100%);
 }
 
 .service-card::before {
@@ -1001,9 +1007,6 @@ section {
     .capability-bg { background-attachment: scroll; }
     .capability-band { min-height: auto; padding: 6rem 0 8rem; }
     .section-divider { height: 60px; }
-    /* Skip the extra video download on mobile data; the poster image already
-       covers this background. */
-    .bg-video, .about-photo-video { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1204,27 +1207,6 @@ section {
     order: 99;
 }
 
-/* The pointer:fine + 1024px gate in app.js is checked once at page load, not
-   on resize (same as the hero tilt) — so this only matters if someone
-   resizes the window narrower after load. It restores the grid layout, but
-   note it can't un-pin an already-running ScrollTrigger instance; treat this
-   as a visual safety net for a rare case, not a full live-breakpoint switch. */
-@media (max-width: 1023px) {
-    .portfolio-scene.cinematic-active .portfolio-depth-layer {
-        display: revert;
-    }
-    .portfolio-scene.cinematic-active .portfolio-grid {
-        display: grid;
-        height: auto;
-        width: auto;
-    }
-    .portfolio-scene.cinematic-active .portfolio-card {
-        width: auto;
-    }
-    .portfolio-scene.cinematic-active .portfolio-card--dev {
-        order: revert;
-    }
-}
 
 /* About / Process / Stats */
 .about-grid {
@@ -1937,8 +1919,21 @@ footer .footer-links a {
         height: 52px;
     }
     .assistant-panel {
-        bottom: 68px;
-        width: 320px;
+        /* Full-screen on mobile instead of a small box anchored near the
+           launcher: a fixed size/position box gets clipped by the on-screen
+           keyboard, hiding the header and messages. 100dvh tracks the
+           visual viewport so the panel shrinks with the keyboard instead
+           of being cut off by it. */
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        max-width: 100%;
+        height: 100dvh;
+        max-height: 100dvh;
+        border-radius: 0;
+        /* Above the site header (z-index: 1000) so the panel covers it
+           edge-to-edge instead of rendering half-hidden underneath it. */
+        z-index: 1005;
     }
 }
 
@@ -2038,6 +2033,12 @@ footer .footer-links a {
        the deck still overlaps proportionally instead of spreading out. */
     .service-card { min-height: 380px; padding: 1.6rem; }
     .services-grid:not(.stack-active) .service-card:not(:first-child) { margin-top: -290px; }
-    .services-grid.stack-active { height: 428px; }
+    /* Pinned stage, sized against the viewport instead of a flat px value:
+       428px left roughly a third of the screen as dead space below the
+       pinned card (it pins right under the header, not vertically
+       centered) on phone-height screens. Scaling with dvh keeps the card
+       filling most of the viewport across phone sizes instead of floating
+       in a mostly-empty section. */
+    .services-grid.stack-active { height: min(560px, 62dvh); }
 }
 

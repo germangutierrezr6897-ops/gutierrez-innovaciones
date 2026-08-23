@@ -226,11 +226,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // toward the edges. Card position is derived analytically (offsetLeft +
     // the row's live x) instead of getBoundingClientRect() in the loop, so
     // this never forces a layout read on scroll.
+    // Runs on every viewport/pointer now — same horizontal fly-by on mobile
+    // as on desktop, no separate vertical fallback. Only reduced-motion (or
+    // the CDN failing to load) skips it, falling back to the plain grid.
     const portfolioScene = document.querySelector('.portfolio-scene');
     const portfolioGrid = document.querySelector('.portfolio-grid');
     const portfolioCardEls = Array.from(document.querySelectorAll('.portfolio-grid .portfolio-card'));
-    const supportsCinematicPortfolio = window.matchMedia('(pointer: fine)').matches && window.innerWidth >= 1024;
-    const useCinematicPortfolio = !prefersReducedMotion && supportsCinematicPortfolio &&
+    const useCinematicPortfolio = !prefersReducedMotion &&
         portfolioScene && portfolioGrid && portfolioCardEls.length > 0 &&
         typeof window.gsap !== 'undefined' && typeof window.ScrollTrigger !== 'undefined';
 
@@ -494,21 +496,37 @@ document.addEventListener('DOMContentLoaded', () => {
                 scrollTrigger: {
                     trigger: servicesGrid,
                     start: 'top top+=' + headerOffset,
-                    end: () => '+=' + Math.max(1, visibleCards.length - 1) * 320,
+                    // +210 gives the fully-assembled last card the same
+                    // ~0.65-unit dwell every earlier card gets before the
+                    // next one drops on top of it (see the loop below).
+                    // Without it, "end" landed exactly on the frame where
+                    // the last card's drop-in tween completed, so the pin
+                    // released — and the section un-pinned and hid itself —
+                    // the instant the last card finished appearing, with no
+                    // time to actually see it.
+                    end: () => '+=' + (Math.max(1, visibleCards.length - 1) * 320 + 210),
                     pin: true,
                     scrub: 0.15,
                     anticipatePin: 1,
-                    // Safety net, independent of whatever the scrub progress
-                    // says: the moment we've scrolled fully past this section,
-                    // force every card invisible, and only let the scrubbed
-                    // opacity take back over once we've scrolled back into
-                    // range. Without this, any pin-boundary drift (a stale
-                    // ScrollTrigger measurement, a resize mid-scroll) can
-                    // leave the last opaque card rendering into whatever
-                    // section comes after — reported as the stack bleeding
-                    // through on top of the Proyectos section.
-                    onLeave: () => gsap.set(visibleCards, { opacity: 0 }),
-                    onEnterBack: () => ScrollTrigger.update(),
+                    // Safety net: the moment we've scrolled fully past this
+                    // section, hide the whole stack container (not the
+                    // individual cards — see below) so nothing renders into
+                    // whatever section comes after — reported as the stack
+                    // bleeding through on top of the Proyectos section.
+                    //
+                    // This used to gsap.set() opacity:0 on every card
+                    // directly, which fought the scrub timeline for the very
+                    // card that's mid-tween exactly at that boundary: the
+                    // set and the timeline's own render of the last tween
+                    // both land in the same tick, and only one wins per
+                    // card. Observed effect — right as the last card finished
+                    // dropping in, cards 1 through (n-1) would go invisible
+                    // while only the last one stayed opaque, i.e. the whole
+                    // deck appeared to vanish out from under the top card.
+                    // Hiding the container is orthogonal to the per-card
+                    // tweens, so it can't race them.
+                    onLeave: () => gsap.set(servicesGrid, { autoAlpha: 0 }),
+                    onEnterBack: () => gsap.set(servicesGrid, { autoAlpha: 1 }),
                 },
             });
 
@@ -666,7 +684,12 @@ document.addEventListener('DOMContentLoaded', () => {
             assistantPanel.classList.add('active');
             assistantPanel.setAttribute('aria-hidden', 'false');
             assistantLauncher.classList.add('active');
-            assistantInput.focus();
+            // Skip auto-focus on small screens: it pops the keyboard the instant
+            // the panel opens, before the user sees it, and the keyboard covers
+            // most of the chat. Desktop keeps the focus for fast typing.
+            if (window.innerWidth > 768) {
+                assistantInput.focus();
+            }
         }
 
         function closeAssistant() {
