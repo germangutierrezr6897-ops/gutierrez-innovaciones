@@ -277,6 +277,15 @@ document.addEventListener('DOMContentLoaded', () => {
         gsap.set(portfolioGrid, { x: startX });
         updateCardScales();
 
+        // Touch scroll (a single swipe) covers a lot more raw pixels per
+        // gesture than a mouse wheel does, so the same pin distance that
+        // feels controlled on desktop blows through the whole carousel in
+        // one flick on a phone. Give touch a longer pin run and more scrub
+        // lag so a normal swipe only advances it partway, not end to end.
+        const isTouchPortfolio = !window.matchMedia('(pointer: fine)').matches;
+        const portfolioPaceMultiplier = isTouchPortfolio ? 1.1 : 0.5;
+        const portfolioScrub = isTouchPortfolio ? 1.1 : 0.7;
+
         // Deferred to the next tick on purpose: the services-grid stack below
         // also pins (with its own pin-spacer), and a pinned trigger's 'top top'
         // is measured once at creation — if this runs first, it captures the
@@ -296,9 +305,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 scrollTrigger: {
                     trigger: portfolioScene,
                     start: 'top top',
-                    end: () => '+=' + Math.round((startX + rowWidth) * 0.5), // matches the actual travel distance (startX to -rowWidth) now that startX is smaller
+                    end: () => '+=' + Math.round((startX + rowWidth) * portfolioPaceMultiplier),
                     pin: true,
-                    scrub: 0.7, // more inertia/lag than before — reads as a smooth drift instead of tracking the wheel 1:1
+                    scrub: portfolioScrub,
                     anticipatePin: 1,
                 },
             });
@@ -492,6 +501,14 @@ document.addEventListener('DOMContentLoaded', () => {
             gsap.set(visibleCards[0], { opacity: 1, y: 0, scale: 1 });
 
             const headerOffset = (headerEl ? headerEl.offsetHeight : 84) + 16;
+            // Same reasoning as the portfolio carousel: a touch swipe covers far
+            // more scroll distance in one gesture than a mouse wheel tick, so a
+            // unit tuned for desktop lets a single flick blow through several
+            // cards at once on a phone. Touch gets a bigger per-card unit and
+            // more scrub lag so a normal swipe advances roughly one card, not five.
+            const isTouchServices = !window.matchMedia('(pointer: fine)').matches;
+            const servicesCardUnit = isTouchServices ? 620 : 320;
+            const servicesScrub = isTouchServices ? 0.5 : 0.15;
             const tl = gsap.timeline({
                 scrollTrigger: {
                     trigger: servicesGrid,
@@ -504,9 +521,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     // released — and the section un-pinned and hid itself —
                     // the instant the last card finished appearing, with no
                     // time to actually see it.
-                    end: () => '+=' + (Math.max(1, visibleCards.length - 1) * 320 + 210),
+                    end: () => '+=' + (Math.max(1, visibleCards.length - 1) * servicesCardUnit + 210),
                     pin: true,
-                    scrub: 0.15,
+                    scrub: servicesScrub,
                     anticipatePin: 1,
                     // Safety net: the moment we've scrolled fully past this
                     // section, hide the whole stack container (not the
