@@ -396,6 +396,37 @@ nav {
     background: linear-gradient(100deg, var(--bg-page) 22%, color-mix(in srgb, var(--bg-page) 45%, transparent) 55%, color-mix(in srgb, var(--bg-page) 6%, transparent) 100%);
 }
 
+/* Ambient background layers — same visual language as the portfolio scene's
+   depth layers, so the hero reads as part of the same "scene". Always
+   present (cheap gradients/blur, fine on mobile); app.js only adds a slow
+   scroll-linked drift to them when the hero tilt system is active. */
+.hero-depth-layer {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.hero-depth-layer--glow-a {
+    background: radial-gradient(30% 26% at 78% 18%, var(--accent-soft) 0%, transparent 100%);
+    filter: blur(24px);
+}
+
+.hero-depth-layer--glow-b {
+    background: radial-gradient(26% 22% at 14% 84%, var(--accent-gold-soft) 0%, transparent 100%);
+    filter: blur(24px);
+}
+
+.hero-depth-layer--lines {
+    background-image:
+        linear-gradient(var(--border-color) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border-color) 1px, transparent 1px);
+    background-size: 56px 56px;
+    -webkit-mask-image: radial-gradient(55% 55% at 72% 42%, black 0%, transparent 100%);
+    mask-image: radial-gradient(55% 55% at 72% 42%, black 0%, transparent 100%);
+    opacity: 0.5;
+}
+
 .hero-grid {
     display: grid;
     grid-template-columns: 1.1fr 0.9fr;
@@ -435,6 +466,13 @@ nav {
     letter-spacing: -0.02em;
     text-transform: uppercase;
     margin-bottom: 1.75rem;
+}
+
+/* Letter-reveal: app.js wraps each character in .char and animates opacity/y.
+   Only ever exists in the DOM when JS actually ran the split (reduced-motion
+   or a failed GSAP load leaves the heading as plain, unwrapped text). */
+.char {
+    display: inline-block;
 }
 
 .hero-description {
@@ -1050,18 +1088,25 @@ section {
 }
 
 .portfolio-scene.cinematic-active .portfolio-grid {
-    display: block;
-    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 3rem;
+    width: max-content;
     height: 100vh;
-    perspective: 1400px; /* without this, translateZ on the cards has no visual effect at all — they'd just overlap flat */
 }
 
 .portfolio-scene.cinematic-active .portfolio-card {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: min(560px, 86vw);
-    opacity: 0; /* GSAP sets the real per-card value on init; this just avoids a flash of all cards stacked at full opacity before that first frame */
+    flex: 0 0 auto;
+    width: min(420px, 72vw);
+}
+
+/* PetControl ("En desarrollo", no link) rides at the visual end of the
+   filmstrip as a closing "coming soon" — order only changes paint order,
+   not DOM/tab order, and it's a plain div with nothing focusable in it
+   anyway, so there's no tab-order/visual-order mismatch to worry about. */
+.portfolio-scene.cinematic-active .portfolio-card--dev {
+    order: 99;
 }
 
 /* The pointer:fine + 1024px gate in app.js is checked once at page load, not
@@ -1070,14 +1115,19 @@ section {
    note it can't un-pin an already-running ScrollTrigger instance; treat this
    as a visual safety net for a rare case, not a full live-breakpoint switch. */
 @media (max-width: 1023px) {
-    .portfolio-scene.cinematic-active .portfolio-depth-layer,
-    .portfolio-scene.cinematic-active .portfolio-card {
+    .portfolio-scene.cinematic-active .portfolio-depth-layer {
         display: revert;
-        position: revert;
     }
     .portfolio-scene.cinematic-active .portfolio-grid {
         display: grid;
         height: auto;
+        width: auto;
+    }
+    .portfolio-scene.cinematic-active .portfolio-card {
+        width: auto;
+    }
+    .portfolio-scene.cinematic-active .portfolio-card--dev {
+        order: revert;
     }
 }
 

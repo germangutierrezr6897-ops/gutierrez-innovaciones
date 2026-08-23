@@ -52,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const heroSection = document.getElementById('hero');
     const heroBgImage = document.querySelector('.hero-bg-image');
     const heroVisualCard = document.querySelector('.hero-visual-card');
+    const heroDepthLayers = Array.from(document.querySelectorAll('.hero-depth-layer'));
     const supportsHeroTilt = window.matchMedia('(pointer: fine)').matches && window.innerWidth > 900;
 
     if (heroSection && heroBgImage && heroVisualCard && !prefersReducedMotion && supportsHeroTilt) {
@@ -72,6 +73,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const progress = Math.min(1, Math.max(0, -rect.top / rect.height));
             heroBgImage.style.transform = `translateY(${(progress * 25).toFixed(1)}px)`;
             heroVisualCard.style.transform = `perspective(1200px) rotateX(${(progress * -6 + mouseRotateX).toFixed(2)}deg) rotateY(${mouseRotateY.toFixed(2)}deg) translateY(${(progress * -20).toFixed(1)}px)`;
+            heroDepthLayers.forEach((layer, i) => {
+                const factor = i % 2 === 0 ? 20 : -16;
+                layer.style.transform = `translateY(${(progress * factor).toFixed(1)}px)`;
+            });
             heroTicking = false;
         }
 
@@ -96,6 +101,78 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         window.addEventListener('scroll', requestHeroUpdate, { passive: true });
         requestHeroUpdate();
+    }
+
+    // 1.3 LETTER-REVEAL: hero H1 staggers in on load, every section H2
+    // staggers in the first time it scrolls into view. Splits by word first
+    // (each word an inline-block span) and only then by character inside
+    // each word, so line-wrapping still happens at real spaces and never
+    // mid-word. Element children (e.g. the hero's .highlight-text span) are
+    // left completely intact — split as one atomic stagger step, not
+    // recursed into — so its own photo-clip text effect isn't touched.
+    // Skipped entirely under prefers-reduced-motion or if GSAP failed to
+    // load: headings just stay as plain, already-readable text.
+    if (!prefersReducedMotion && typeof window.gsap !== 'undefined') {
+        function splitCharsForStagger(el) {
+            const originalNodes = Array.from(el.childNodes);
+            el.textContent = '';
+            const chars = [];
+
+            function appendWord(word) {
+                const wordSpan = document.createElement('span');
+                wordSpan.style.display = 'inline-block';
+                Array.from(word).forEach(ch => {
+                    const charSpan = document.createElement('span');
+                    charSpan.className = 'char';
+                    charSpan.textContent = ch;
+                    wordSpan.appendChild(charSpan);
+                    chars.push(charSpan);
+                });
+                el.appendChild(wordSpan);
+            }
+
+            originalNodes.forEach(node => {
+                if (node.nodeType === Node.TEXT_NODE) {
+                    const words = node.textContent.split(' ');
+                    words.forEach((word, i) => {
+                        if (word.length > 0) appendWord(word);
+                        if (i < words.length - 1) el.appendChild(document.createTextNode(' '));
+                    });
+                } else {
+                    el.appendChild(node);
+                    chars.push(node);
+                }
+            });
+
+            return chars;
+        }
+
+        const heroTitleEl = document.querySelector('.hero-title');
+        if (heroTitleEl) {
+            const heroChars = splitCharsForStagger(heroTitleEl);
+            gsap.set(heroChars, { opacity: 0, y: 24 });
+            gsap.to(heroChars, {
+                opacity: 1, y: 0,
+                duration: 0.6,
+                stagger: 0.02,
+                ease: 'power3.out',
+                delay: 2.7, // synced with the intro splash's own dismiss timing (2200ms wait + 500ms fade)
+            });
+        }
+
+        const sectionTitleEls = Array.from(document.querySelectorAll('.section-title'));
+        if (sectionTitleEls.length > 0) {
+            const titleObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) return;
+                    const chars = splitCharsForStagger(entry.target);
+                    gsap.set(chars, { opacity: 0, y: 18 });
+                    gsap.to(chars, { opacity: 1, y: 0, duration: 0.5, stagger: 0.015, ease: 'power3.out' });
+                    observer.unobserve(entry.target);
+                });
+            }, { threshold: 0.4 });
+            sectionTitleEls.forEach(el => titleObserver.observe(el));
+        }
     }
 
     // 2. HEADER SCROLL & MOBILE NAVIGATION MENU
@@ -134,18 +211,28 @@ document.addEventListener('DOMContentLoaded', () => {
         scrollspySections.forEach(section => scrollspyObserver.observe(section));
     }
 
-    // 2.1 PORTFOLIO: either the cinematic pinned Z-axis fly-through (desktop
-    // pointer, wide viewport, motion allowed, GSAP loaded from CDN) or the
-    // original hover-tilt + scroll-parallax on the static grid — never both,
-    // they'd fight over the same `transform` property on the same cards.
+    // 2.1 PORTFOLIO: either the cinematic horizontal fly-by (desktop pointer,
+    // wide viewport, motion allowed, GSAP loaded from CDN) or the original
+    // hover-tilt + scroll-parallax on the static grid — never both, they'd
+    // fight over the same `transform` property on the same cards.
     // Everywhere else (mobile, touch, narrow window, reduced motion, or if
     // the CDN script ever fails to load) the section is just the plain grid
     // already in index.html/style.css — pure progressive enhancement.
+    //
+    // The whole row (.portfolio-grid, laid out as a flex filmstrip by CSS
+    // under .cinematic-active) is dragged right-to-left by one scrubbed
+    // tween. Each card's own scale/opacity is recomputed every tick from
+    // its distance to the viewport's horizontal center — largest and most
+    // opaque exactly as it passes in front of the user, easing back down
+    // toward the edges. Card position is derived analytically (offsetLeft +
+    // the row's live x) instead of getBoundingClientRect() in the loop, so
+    // this never forces a layout read on scroll.
     const portfolioScene = document.querySelector('.portfolio-scene');
+    const portfolioGrid = document.querySelector('.portfolio-grid');
     const portfolioCardEls = Array.from(document.querySelectorAll('.portfolio-grid .portfolio-card'));
     const supportsCinematicPortfolio = window.matchMedia('(pointer: fine)').matches && window.innerWidth >= 1024;
     const useCinematicPortfolio = !prefersReducedMotion && supportsCinematicPortfolio &&
-        portfolioScene && portfolioCardEls.length > 0 &&
+        portfolioScene && portfolioGrid && portfolioCardEls.length > 0 &&
         typeof window.gsap !== 'undefined' && typeof window.ScrollTrigger !== 'undefined';
 
     if (useCinematicPortfolio) {
@@ -153,54 +240,39 @@ document.addEventListener('DOMContentLoaded', () => {
         portfolioScene.classList.add('cinematic-active');
         portfolioCardEls.forEach(card => card.classList.remove('reveal')); // GSAP owns opacity/transform now, not the IntersectionObserver reveal system
 
-        gsap.set(portfolioCardEls, { xPercent: -50, yPercent: -50, pointerEvents: 'none' });
+        const viewportW = window.innerWidth;
+        const rowWidth = portfolioGrid.scrollWidth; // read once, after the flex layout from .cinematic-active has applied
+        const maxDist = viewportW * 0.55;
+        const cardMetrics = portfolioCardEls.map(el => ({
+            el,
+            center: el.offsetLeft + el.offsetWidth / 2,
+        }));
 
-        const cardCount = portfolioCardEls.length;
-        const segment = 1;   // one timeline "unit" per card
-        const overlap = 0.3; // how much of that unit overlaps the next card, for a continuous cross-fade instead of a hard cut
-        const step = segment - overlap;
+        function updateCardScales() {
+            const rowX = gsap.getProperty(portfolioGrid, 'x');
+            const viewportCenter = viewportW / 2;
+            cardMetrics.forEach(({ el, center }) => {
+                const dist = Math.min(Math.abs((center + rowX) - viewportCenter), maxDist);
+                const t = 1 - dist / maxDist; // 1 dead-center, 0 at the edge of its visible range
+                gsap.set(el, { scale: 0.82 + t * 0.43, opacity: 0.5 + t * 0.5 });
+            });
+        }
 
-        const tl = gsap.timeline({
+        gsap.set(portfolioGrid, { x: viewportW }); // first card starts just off-screen right
+        updateCardScales();
+
+        gsap.to(portfolioGrid, {
+            x: -rowWidth, // last card ends fully past the left edge
+            ease: 'none',
+            onUpdate: updateCardScales,
             scrollTrigger: {
                 trigger: portfolioScene,
                 start: 'top top',
-                end: () => '+=' + Math.round(window.innerHeight * 1.2 * cardCount), // short & agile: ~1.2 screens of scroll per card
+                end: () => '+=' + Math.round((viewportW + rowWidth) * 0.7), // short & agile, not a 1:1 scroll-to-pixel crawl
                 pin: true,
                 scrub: 0.4,
                 anticipatePin: 1,
             },
-        });
-
-        // Sequence order for the fly-through only (DOM/tab order is untouched) — PetControl
-        // ("En desarrollo", no link) rides at the end as the closing "coming soon" stop.
-        const sequencedCards = [
-            ...portfolioCardEls.filter(el => !el.classList.contains('portfolio-card--dev')),
-            ...portfolioCardEls.filter(el => el.classList.contains('portfolio-card--dev')),
-        ];
-
-        sequencedCards.forEach((card, i) => {
-            const base = i * step;
-            // Approach: fades/scales in from far behind the viewer, crossing to full size front-and-center
-            tl.fromTo(card,
-                { z: -1400, y: 60, scale: 0.72, opacity: 0 },
-                {
-                    z: 0, y: 0, scale: 1, opacity: 1,
-                    duration: segment / 2,
-                    ease: 'power2.out',
-                    onStart: () => { card.style.pointerEvents = 'auto'; },
-                },
-                base
-            );
-            // Recede: keeps drifting past the viewer and fades out on the other side
-            tl.to(card,
-                {
-                    z: 260, y: -60, scale: 1.08, opacity: 0,
-                    duration: segment / 2,
-                    ease: 'power2.in',
-                    onStart: () => { card.style.pointerEvents = 'none'; },
-                },
-                base + segment / 2
-            );
         });
     } else if (!prefersReducedMotion) {
         const portfolioCardStates = portfolioCardEls.map((el, i) => ({
