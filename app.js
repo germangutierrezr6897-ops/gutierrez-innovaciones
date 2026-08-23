@@ -14,10 +14,31 @@ document.addEventListener('DOMContentLoaded', () => {
     function closeIntro() {
         if (!introScreen || introScreen.classList.contains('intro-closing')) return;
         introScreen.classList.add('intro-closing');
-        setTimeout(() => {
+        const finish = () => {
             introScreen.remove();
             document.body.classList.remove('intro-open');
-        }, 500);
+        };
+        // GSAP gives a smoother multi-property hand-off (scale + blur + fade)
+        // than the plain CSS opacity fade; falls back to that CSS transition
+        // if the CDN script hasn't loaded yet or reduced-motion is on.
+        if (typeof window.gsap !== 'undefined' && !prefersReducedMotion) {
+            const introContent = introScreen.querySelector('.intro-content');
+            // The CSS transitions on these elements are only meant for the no-GSAP
+            // fallback path below — turn them off so they don't fight GSAP's own tween.
+            introScreen.style.transition = 'none';
+            if (introContent) introContent.style.transition = 'none';
+            gsap.to(introScreen, { opacity: 0, duration: 0.8, ease: 'power2.inOut' });
+            gsap.to(introContent, {
+                scale: 1.08,
+                y: -24,
+                filter: 'blur(8px)',
+                duration: 0.8,
+                ease: 'power2.inOut',
+                onComplete: finish,
+            });
+        } else {
+            setTimeout(finish, 500);
+        }
     }
 
     if (introBtn) {
@@ -103,8 +124,9 @@ document.addEventListener('DOMContentLoaded', () => {
         requestHeroUpdate();
     }
 
-    // 1.3 LETTER-REVEAL: hero H1 staggers in on load, every section H2
-    // staggers in the first time it scrolls into view. Splits by word first
+    // 1.3 LETTER-REVEAL: hero H1 staggers in once the intro splash clears,
+    // every section H2 staggers in each time it scrolls into view — and
+    // both replay on re-entry (scroll away, then back). Splits by word first
     // (each word an inline-block span) and only then by character inside
     // each word, so line-wrapping still happens at real spaces and never
     // mid-word. Element children (e.g. the hero's .highlight-text span) are
@@ -147,31 +169,54 @@ document.addEventListener('DOMContentLoaded', () => {
             return chars;
         }
 
+        // Re-playable, not one-shot: every char set replays each time its
+        // heading re-enters the viewport (scrolling back up included), and
+        // resets to hidden the moment it leaves — so it's ready to play again.
+        function playChars(chars, y, duration, stagger, delay) {
+            gsap.killTweensOf(chars);
+            gsap.to(chars, { opacity: 1, y: 0, duration, stagger, ease: 'power3.out', delay: delay || 0 });
+        }
+        function hideChars(chars, y) {
+            gsap.killTweensOf(chars);
+            gsap.set(chars, { opacity: 0, y });
+        }
+
         const heroTitleEl = document.querySelector('.hero-title');
         if (heroTitleEl) {
             const heroChars = splitCharsForStagger(heroTitleEl);
             gsap.set(heroChars, { opacity: 0, y: 24 });
-            gsap.to(heroChars, {
-                opacity: 1, y: 0,
-                duration: 0.6,
-                stagger: 0.02,
-                ease: 'power3.out',
-                delay: 2.7, // synced with the intro splash's own dismiss timing (2200ms wait + 500ms fade)
-            });
+            let heroPlayedOnce = false;
+            const heroTitleObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        // First time, wait for the intro splash to finish (2200ms hold + 800ms fade);
+                        // every re-entry after that (scroll away and back) replays immediately.
+                        playChars(heroChars, 24, 0.9, 0.045, heroPlayedOnce ? 0 : 3);
+                        heroPlayedOnce = true;
+                    } else {
+                        hideChars(heroChars, 24);
+                    }
+                });
+            }, { threshold: 0.3 });
+            heroTitleObserver.observe(heroTitleEl);
         }
 
         const sectionTitleEls = Array.from(document.querySelectorAll('.section-title'));
         if (sectionTitleEls.length > 0) {
-            const titleObserver = new IntersectionObserver((entries, observer) => {
-                entries.forEach(entry => {
-                    if (!entry.isIntersecting) return;
-                    const chars = splitCharsForStagger(entry.target);
-                    gsap.set(chars, { opacity: 0, y: 18 });
-                    gsap.to(chars, { opacity: 1, y: 0, duration: 0.5, stagger: 0.015, ease: 'power3.out' });
-                    observer.unobserve(entry.target);
-                });
-            }, { threshold: 0.4 });
-            sectionTitleEls.forEach(el => titleObserver.observe(el));
+            sectionTitleEls.forEach(titleEl => {
+                const chars = splitCharsForStagger(titleEl);
+                gsap.set(chars, { opacity: 0, y: 18 });
+                const titleObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            playChars(chars, 18, 0.7, 0.035);
+                        } else {
+                            hideChars(chars, 18);
+                        }
+                    });
+                }, { threshold: 0.35 });
+                titleObserver.observe(titleEl);
+            });
         }
     }
 
@@ -252,9 +297,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const rowX = gsap.getProperty(portfolioGrid, 'x');
             const viewportCenter = viewportW / 2;
             cardMetrics.forEach(({ el, center }) => {
-                const dist = Math.min(Math.abs((center + rowX) - viewportCenter), maxDist);
-                const t = 1 - dist / maxDist; // 1 dead-center, 0 at the edge of its visible range
-                gsap.set(el, { scale: 0.82 + t * 0.43, opacity: 0.5 + t * 0.5 });
+                const xNorm = Math.max(-1, Math.min(1, ((center + rowX) - viewportCenter) / maxDist));
+                // Upper-semicircle equation (y = sqrt(1 - x^2)): 1 dead-center, 0 at
+                // the edges, with genuine circular curvature — not a straight taper —
+                // driving size, opacity AND a vertical rise, for the "planet arcing
+                // past the viewer" path instead of a flat horizontal slide.
+                const arc = Math.sqrt(Math.max(0, 1 - xNorm * xNorm));
+                gsap.set(el, {
+                    scale: 0.55 + arc * 0.8,     // born small, swells to its largest dead-center
+                    opacity: 0.35 + arc * 0.65,
+                    y: -arc * 130,                // rises into the arc as it crosses, settles back down at the edges
+                });
             });
         }
 

@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <!-- Stop the browser from restoring last scroll position on reload/back-forward —
+         it doesn't play well with the pinned portfolio section (its pin-spacer height
+         is calculated by JS after load, so a cached raw scrollY can land somewhere
+         that no longer matches). Must run before the browser applies its own restore. -->
+    <script>
+        if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Diseñamos sitios web y landing pages a medida para pymes en Chile: rápidos, profesionales y pensados para vender más. Cotiza tu proyecto hoy.">
