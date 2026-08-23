@@ -1004,6 +1004,83 @@ section {
     transform: none;
 }
 
+/* Portfolio cinematic scroll (JS-enabled: desktop pointer, wide viewport,
+   motion allowed, GSAP loaded). Default state below is the no-JS/fallback
+   grid — untouched. Everything here only takes effect once app.js adds
+   .cinematic-active, which it only does after checking all of the above. */
+.portfolio-scene {
+    position: relative;
+}
+
+.portfolio-depth-layer {
+    display: none;
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.portfolio-scene.cinematic-active .portfolio-depth-layer {
+    display: block;
+}
+
+.portfolio-depth-layer--lines {
+    background-image:
+        linear-gradient(var(--border-color) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border-color) 1px, transparent 1px);
+    background-size: 64px 64px;
+    -webkit-mask-image: radial-gradient(60% 60% at 50% 50%, black 0%, transparent 100%);
+    mask-image: radial-gradient(60% 60% at 50% 50%, black 0%, transparent 100%);
+    opacity: 0.7;
+}
+
+.portfolio-depth-layer--glow-a {
+    background: radial-gradient(38% 34% at 20% 28%, var(--accent-soft) 0%, transparent 100%);
+    filter: blur(20px);
+}
+
+.portfolio-depth-layer--glow-b {
+    background: radial-gradient(34% 30% at 82% 72%, var(--accent-gold-soft) 0%, transparent 100%);
+    filter: blur(20px);
+}
+
+.portfolio-scene.cinematic-active > .container {
+    position: relative;
+    z-index: 1;
+}
+
+.portfolio-scene.cinematic-active .portfolio-grid {
+    display: block;
+    position: relative;
+    height: 100vh;
+    perspective: 1400px; /* without this, translateZ on the cards has no visual effect at all — they'd just overlap flat */
+}
+
+.portfolio-scene.cinematic-active .portfolio-card {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: min(560px, 86vw);
+    opacity: 0; /* GSAP sets the real per-card value on init; this just avoids a flash of all cards stacked at full opacity before that first frame */
+}
+
+/* The pointer:fine + 1024px gate in app.js is checked once at page load, not
+   on resize (same as the hero tilt) — so this only matters if someone
+   resizes the window narrower after load. It restores the grid layout, but
+   note it can't un-pin an already-running ScrollTrigger instance; treat this
+   as a visual safety net for a rare case, not a full live-breakpoint switch. */
+@media (max-width: 1023px) {
+    .portfolio-scene.cinematic-active .portfolio-depth-layer,
+    .portfolio-scene.cinematic-active .portfolio-card {
+        display: revert;
+        position: revert;
+    }
+    .portfolio-scene.cinematic-active .portfolio-grid {
+        display: grid;
+        height: auto;
+    }
+}
+
 /* About / Process / Stats */
 .about-grid {
     display: grid;

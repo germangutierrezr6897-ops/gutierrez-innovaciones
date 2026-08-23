@@ -134,23 +134,88 @@ document.addEventListener('DOMContentLoaded', () => {
         scrollspySections.forEach(section => scrollspyObserver.observe(section));
     }
 
-    // 2.1 PORTFOLIO CARDS: 3D tilt on hover + scroll-linked parallax drift,
-    // unified into one transform per card so they don't fight each other
-    // (both would otherwise write to the same `transform` property).
-    const portfolioCardStates = Array.from(document.querySelectorAll('.portfolio-grid .portfolio-card')).map((el, i) => ({
-        el,
-        factor: (i % 2 === 0) ? -0.04 : 0.06,
-        rotateX: 0,
-        rotateY: 0,
-        liftY: 0,
-        parallaxY: 0,
-    }));
+    // 2.1 PORTFOLIO: either the cinematic pinned Z-axis fly-through (desktop
+    // pointer, wide viewport, motion allowed, GSAP loaded from CDN) or the
+    // original hover-tilt + scroll-parallax on the static grid — never both,
+    // they'd fight over the same `transform` property on the same cards.
+    // Everywhere else (mobile, touch, narrow window, reduced motion, or if
+    // the CDN script ever fails to load) the section is just the plain grid
+    // already in index.html/style.css — pure progressive enhancement.
+    const portfolioScene = document.querySelector('.portfolio-scene');
+    const portfolioCardEls = Array.from(document.querySelectorAll('.portfolio-grid .portfolio-card'));
+    const supportsCinematicPortfolio = window.matchMedia('(pointer: fine)').matches && window.innerWidth >= 1024;
+    const useCinematicPortfolio = !prefersReducedMotion && supportsCinematicPortfolio &&
+        portfolioScene && portfolioCardEls.length > 0 &&
+        typeof window.gsap !== 'undefined' && typeof window.ScrollTrigger !== 'undefined';
 
-    function applyCardTransform(state) {
-        state.el.style.transform = `perspective(900px) rotateX(${state.rotateX}deg) rotateY(${state.rotateY}deg) translateY(${(state.liftY + state.parallaxY).toFixed(1)}px)`;
-    }
+    if (useCinematicPortfolio) {
+        gsap.registerPlugin(ScrollTrigger);
+        portfolioScene.classList.add('cinematic-active');
+        portfolioCardEls.forEach(card => card.classList.remove('reveal')); // GSAP owns opacity/transform now, not the IntersectionObserver reveal system
 
-    if (!prefersReducedMotion) {
+        gsap.set(portfolioCardEls, { xPercent: -50, yPercent: -50, pointerEvents: 'none' });
+
+        const cardCount = portfolioCardEls.length;
+        const segment = 1;   // one timeline "unit" per card
+        const overlap = 0.3; // how much of that unit overlaps the next card, for a continuous cross-fade instead of a hard cut
+        const step = segment - overlap;
+
+        const tl = gsap.timeline({
+            scrollTrigger: {
+                trigger: portfolioScene,
+                start: 'top top',
+                end: () => '+=' + Math.round(window.innerHeight * 1.2 * cardCount), // short & agile: ~1.2 screens of scroll per card
+                pin: true,
+                scrub: 0.4,
+                anticipatePin: 1,
+            },
+        });
+
+        // Sequence order for the fly-through only (DOM/tab order is untouched) — PetControl
+        // ("En desarrollo", no link) rides at the end as the closing "coming soon" stop.
+        const sequencedCards = [
+            ...portfolioCardEls.filter(el => !el.classList.contains('portfolio-card--dev')),
+            ...portfolioCardEls.filter(el => el.classList.contains('portfolio-card--dev')),
+        ];
+
+        sequencedCards.forEach((card, i) => {
+            const base = i * step;
+            // Approach: fades/scales in from far behind the viewer, crossing to full size front-and-center
+            tl.fromTo(card,
+                { z: -1400, y: 60, scale: 0.72, opacity: 0 },
+                {
+                    z: 0, y: 0, scale: 1, opacity: 1,
+                    duration: segment / 2,
+                    ease: 'power2.out',
+                    onStart: () => { card.style.pointerEvents = 'auto'; },
+                },
+                base
+            );
+            // Recede: keeps drifting past the viewer and fades out on the other side
+            tl.to(card,
+                {
+                    z: 260, y: -60, scale: 1.08, opacity: 0,
+                    duration: segment / 2,
+                    ease: 'power2.in',
+                    onStart: () => { card.style.pointerEvents = 'none'; },
+                },
+                base + segment / 2
+            );
+        });
+    } else if (!prefersReducedMotion) {
+        const portfolioCardStates = portfolioCardEls.map((el, i) => ({
+            el,
+            factor: (i % 2 === 0) ? -0.04 : 0.06,
+            rotateX: 0,
+            rotateY: 0,
+            liftY: 0,
+            parallaxY: 0,
+        }));
+
+        function applyCardTransform(state) {
+            state.el.style.transform = `perspective(900px) rotateX(${state.rotateX}deg) rotateY(${state.rotateY}deg) translateY(${(state.liftY + state.parallaxY).toFixed(1)}px)`;
+        }
+
         portfolioCardStates.forEach(state => {
             state.el.addEventListener('mousemove', (e) => {
                 const rect = state.el.getBoundingClientRect();
