@@ -19,6 +19,7 @@
     --accent-strong: #14367F;
     --accent-soft: rgba(30, 79, 199, 0.10);
     --accent-contrast: #FFFFFF;
+    --accent-on-dark: #6C93EB;
     --accent-gold: #B8862E;
     --accent-gold-soft: rgba(184, 134, 46, 0.14);
 
@@ -543,7 +544,7 @@ nav {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.12em;
-    color: var(--text-muted);
+    color: var(--text-secondary);
     margin-bottom: 1.1rem;
 }
 
@@ -586,16 +587,18 @@ nav {
     font-family: var(--font-display);
     font-size: 1.7rem;
     font-weight: 500;
-    color: var(--accent);
+    color: var(--accent-on-dark);
     flex-shrink: 0;
 }
 
-.hero-visual-tag h4 {
+.hero-visual-tag-title {
     font-family: var(--font-sans);
     font-size: 0.85rem;
     font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
     color: var(--bg-page);
-    margin-bottom: 0.2rem;
+    margin: 0 0 0.2rem;
 }
 
 .hero-visual-tag p {
@@ -1417,7 +1420,7 @@ section {
     display: block;
 }
 
-.process-step h4 {
+.process-step h3 {
     font-size: 1.05rem;
     margin-bottom: 0.6rem;
 }
@@ -1469,7 +1472,7 @@ section {
     flex-shrink: 0;
 }
 
-.contact-method-text h4 {
+.contact-method-text h3 {
     font-family: var(--font-sans);
     font-size: 0.8rem;
     font-weight: 600;
